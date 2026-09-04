@@ -1,26 +1,20 @@
 {
-  "name": "client",
-  "version": "0.1.0",
+  "name": "medikiosk",
+  "version": "1.0.0",
   "private": true,
+  "description": "MediKiosk (AyushPod) Monorepo for SIH26047",
+  "workspaces": [
+    "patient",
+    "doctor",
+    "admin",
+    "backend",
+    "shared"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
-  },
-  "dependencies": {
-    "next": "16.3.4",
-    "react": "19.2.8",
-    "react-dom": "19.2.8"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.3.4",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "dev:patient": "npm run dev --workspace=patient",
+    "dev:doctor": "npm run dev --workspace=doctor",
+    "dev:admin": "npm run dev --workspace=admin",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:all": "npm run dev:patient & npm run dev:doctor & npm run dev:admin & npm run dev:backend"
   }
 }
