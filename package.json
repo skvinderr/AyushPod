@@ -4,9 +4,9 @@
   "private": true,
   "description": "MediKiosk (AyushPod) Monorepo for SIH26047",
   "workspaces": [
-    "patient",
-    "doctor",
-    "admin",
+    "client/patient",
+    "client/doctor",
+    "client/admin",
     "backend",
     "shared"
   ],
