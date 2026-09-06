@@ -4,46 +4,57 @@ import React from 'react';
 import { useAvatar } from '../store/useAvatar';
 import { motion } from 'framer-motion';
 
+/*
+ * 2D fallback for the Aaya guide (WebGL unavailable / low-power kiosk).
+ * Same warm palette + face language as the 3D character: teal cap, soft skin,
+ * blinking-style eyes, a mouth that opens while talking.
+ */
 export function FallbackAvatar() {
-  const { state } = useAvatar();
+  const { state, mouth } = useAvatar();
 
-  const getAnimationProps = () => {
+  const bodyAnim = () => {
     switch (state) {
       case 'idle':
-        return { y: [0, -5, 0], transition: { repeat: Infinity, duration: 2 } };
-      case 'talking':
-        return { scale: [1, 1.05, 1], transition: { repeat: Infinity, duration: 0.3 } };
-      case 'listening':
-        return { rotate: 5, scale: 1.02 };
+        return { y: [0, -4, 0], transition: { repeat: Infinity, duration: 2.4, ease: 'easeInOut' } };
       case 'happy':
-        return { y: [0, -10, 0], transition: { repeat: Infinity, duration: 0.8 } };
+        return { y: [0, -8, 0], transition: { repeat: Infinity, duration: 0.7 } };
+      case 'listening':
+        return { rotate: 6, transition: { type: 'spring', stiffness: 120 } };
       case 'concerned':
-        return { rotate: -5, scale: 0.98 };
+        return { rotate: -4, y: 2 };
       default:
         return {};
     }
   };
 
-  const getMouthClass = () => {
-    if (state === 'talking') return 'h-4 w-12 rounded-full bg-blue-900 animate-pulse';
-    if (state === 'happy') return 'h-6 w-12 rounded-b-full bg-blue-900';
-    if (state === 'concerned') return 'h-2 w-8 rounded-full bg-blue-900 mt-2';
-    return 'h-2 w-10 rounded-full bg-blue-900'; // idle/listening
-  };
+  const mouthHeight =
+    state === 'talking' ? 6 + mouth * 20 : state === 'happy' ? 20 : state === 'concerned' ? 4 : 8;
+  const mouthWidth = state === 'concerned' ? 24 : 34;
 
   return (
-    <div className="w-full h-full flex items-center justify-center p-4">
-      <motion.div
-        animate={getAnimationProps()}
-        className="w-32 h-32 bg-blue-500 rounded-full shadow-lg flex flex-col items-center justify-center relative border-4 border-blue-400"
-      >
-        {/* Eyes */}
-        <div className="flex gap-4 mb-2">
-          <div className="w-4 h-4 bg-blue-900 rounded-full" />
-          <div className="w-4 h-4 bg-blue-900 rounded-full" />
+    <div className="w-full h-full flex items-center justify-center p-3">
+      <motion.div animate={bodyAnim()} className="relative w-32 h-32">
+        {/* head */}
+        <div className="absolute inset-0 rounded-full bg-[#f2c9a0] shadow-inner" />
+        {/* cap */}
+        <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-[118px] h-16 rounded-t-full bg-[#1f7a6e]" />
+        {/* eyes */}
+        <div className="absolute top-[52px] left-1/2 -translate-x-1/2 flex gap-5">
+          <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center">
+            <div className="w-2.5 h-2.5 rounded-full bg-[#3a3330]" />
+          </div>
+          <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center">
+            <div className="w-2.5 h-2.5 rounded-full bg-[#3a3330]" />
+          </div>
         </div>
-        {/* Mouth */}
-        <div className={getMouthClass()} />
+        {/* cheeks */}
+        <div className="absolute top-[74px] left-[26px] w-4 h-3 rounded-full bg-[#e8896f]/40" />
+        <div className="absolute top-[74px] right-[26px] w-4 h-3 rounded-full bg-[#e8896f]/40" />
+        {/* mouth */}
+        <div
+          className="absolute left-1/2 -translate-x-1/2 rounded-full bg-[#a5432f] transition-all duration-75"
+          style={{ top: 84, width: mouthWidth, height: mouthHeight }}
+        />
       </motion.div>
     </div>
   );

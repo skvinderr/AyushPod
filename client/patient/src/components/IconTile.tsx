@@ -3,35 +3,53 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
-import { cn } from './LargeTouchButton'; // re-using the cn utility
+import { cn } from './LargeTouchButton';
 
-interface IconTileProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface IconTileProps {
   icon: LucideIcon;
   label: string;
+  onClick: () => void;
   selected?: boolean;
+  disabled?: boolean;
+  className?: string;
 }
 
-export const IconTile = React.forwardRef<HTMLButtonElement, IconTileProps>(
-  ({ className, icon: Icon, label, selected = false, ...props }, ref) => {
-    return (
-      <motion.button
-        ref={ref}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.95 }}
-        className={cn(
-          'flex flex-col items-center justify-center p-8 rounded-3xl min-h-[160px] min-w-[160px] gap-4 transition-colors',
-          'border-4 outline-none focus-visible:ring-8 focus-visible:ring-blue-500/50 shadow-md',
-          selected 
-            ? 'border-blue-600 bg-blue-50 text-blue-700' 
-            : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300',
-          className
-        )}
-        {...props}
-      >
-        <Icon size={64} className={selected ? 'text-blue-600' : 'text-slate-600'} />
-        <span className="text-2xl font-bold text-center">{label}</span>
-      </motion.button>
-    );
-  }
-);
-IconTile.displayName = 'IconTile';
+export function IconTile({ 
+  icon: Icon, 
+  label, 
+  onClick, 
+  selected = false,
+  disabled = false,
+  className 
+}: IconTileProps) {
+  return (
+    <motion.button
+      whileHover={{ scale: disabled ? 1 : 1.02 }}
+      whileTap={{ scale: disabled ? 1 : 0.98 }}
+      onClick={onClick}
+      disabled={disabled}
+      className={cn(
+        "flex flex-col items-center justify-center p-8 gap-6 transition-all duration-300 outline-none",
+        "rounded-[1.75rem] border-2 bg-surface",
+        selected
+          ? "border-primary shadow-[var(--shadow-warm)] ring-4 ring-primary/25"
+          : "border-hairline shadow-[var(--shadow-soft)] hover:-translate-y-1 hover:shadow-[var(--shadow-warm)]",
+        disabled ? "opacity-50 cursor-not-allowed grayscale" : "cursor-pointer focus-visible:ring-4 focus-visible:ring-primary/40",
+        className
+      )}
+    >
+      <div className={cn(
+        "p-6 rounded-full transition-colors duration-300",
+        selected ? "bg-primary text-white" : "bg-primary-soft text-primary"
+      )}>
+        <Icon size={48} />
+      </div>
+      <span className={cn(
+        "text-2xl font-semibold text-center",
+        selected ? "text-primary-deep" : "text-ink"
+      )}>
+        {label}
+      </span>
+    </motion.button>
+  );
+}

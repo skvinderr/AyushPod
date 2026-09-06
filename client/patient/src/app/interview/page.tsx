@@ -8,6 +8,7 @@ import { useSessionStore } from '../../store/useSessionStore';
 import { useVoiceInput } from '../../lib/useVoiceInput';
 import { interviewTree } from '../../lib/interviewTree';
 import { IconTile } from '../../components/IconTile';
+import { StepIndicator } from '../../components/StepIndicator';
 import { LargeTouchButton } from '../../components/LargeTouchButton';
 import { Mic, ArrowRight } from 'lucide-react';
 import { cn } from '../../components/LargeTouchButton';
@@ -78,17 +79,17 @@ export default function InterviewScreen() {
 
   if (isVoiceNarration) {
     return (
-      <div className="absolute inset-0 bg-slate-50 flex flex-col items-center justify-center p-12 overflow-hidden">
-        <h1 className="text-5xl font-bold text-slate-800 text-center mb-12">Describe your symptoms</h1>
-        
+      <div className="absolute inset-0 bg-bg flex flex-col items-center justify-center p-12 overflow-hidden">
+        <h1 className="text-5xl font-bold text-ink text-center mb-12">Describe your symptoms</h1>
+
         <motion.button
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
           whileTap={{ scale: 0.95 }}
           onClick={startListening}
           className={cn(
-            "w-96 h-96 rounded-full flex flex-col items-center justify-center gap-6 shadow-2xl transition-all duration-300",
-            isListening ? "bg-blue-600 text-white animate-pulse border-8 border-blue-400" : "bg-white border-8 border-slate-200 text-slate-700"
+            "w-96 h-96 rounded-full flex flex-col items-center justify-center gap-6 shadow-[var(--shadow-warm)] transition-all duration-300",
+            isListening ? "bg-primary text-white animate-pulse border-8 border-primary/40" : "bg-surface border-8 border-hairline text-ink"
           )}
         >
           <Mic size={100} />
@@ -108,20 +109,27 @@ export default function InterviewScreen() {
 
   // Structured Interview Flow
   return (
-    <div className="absolute inset-0 bg-slate-50 flex flex-col pt-12 pb-8 px-12 overflow-hidden">
+    <div className="w-full h-full flex flex-col items-center justify-center pb-12">
       
-      {/* Progress Dots */}
-      <div className="flex justify-center gap-4 mb-8">
-        {questions.map((_, idx) => (
-          <div 
-            key={idx} 
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full max-w-5xl bg-surface rounded-[2rem] shadow-[var(--shadow-warm)] border border-hairline p-12 flex flex-col min-h-[70vh]"
+      >
+        <StepIndicator currentStep={3} totalSteps={4} title="Medical History" />
+
+        {/* Progress Bar (Sub-steps) */}
+        <div className="flex gap-2 w-full max-w-md mx-auto mb-8">
+          {questions.map((_, idx) => (
+          <div
+            key={idx}
             className={cn(
               "w-4 h-4 rounded-full transition-colors",
-              idx === currentIndex ? "bg-blue-600" : idx < currentIndex ? "bg-blue-300" : "bg-slate-300"
+              idx === currentIndex ? "bg-primary" : idx < currentIndex ? "bg-primary/40" : "bg-hairline"
             )}
           />
-        ))}
-      </div>
+          ))}
+        </div>
 
       <div className="flex-1 flex flex-col items-center max-w-5xl mx-auto w-full relative">
         <AnimatePresence mode="wait">
@@ -166,13 +174,13 @@ export default function InterviewScreen() {
                 whileTap={{ scale: 0.95 }}
                 onClick={startListening}
                 className={cn(
-                  "mt-8 flex items-center gap-6 px-10 py-6 rounded-full bg-white/80 backdrop-blur-md shadow-lg border-2 border-slate-200",
-                  isListening ? "ring-4 ring-blue-400 border-blue-400" : ""
+                  "mt-8 flex items-center gap-6 px-10 py-6 rounded-full bg-white shadow-[0_4px_20px_rgba(0,0,0,0.05)] border-2 border-transparent",
+                  isListening ? "ring-4 ring-[#00a8e8]/30 border-[#00a8e8]" : ""
                 )}
               >
                 <div className={cn(
-                  "p-4 rounded-full text-blue-600",
-                  isListening ? "bg-blue-600 text-white animate-pulse" : "bg-blue-100"
+                  "p-4 rounded-full text-[#00a8e8]",
+                  isListening ? "bg-[#00a8e8] text-white animate-pulse" : "bg-sky-50"
                 )}>
                   <Mic size={32} />
                 </div>
@@ -196,6 +204,14 @@ export default function InterviewScreen() {
 
         </AnimatePresence>
       </div>
+
+      <div className="mt-8 flex gap-6 w-full pt-6 border-t border-slate-100">
+        <LargeTouchButton variant="secondary" onClick={() => router.push('/complaint')} className="w-48 py-6">
+          Back
+        </LargeTouchButton>
+      </div>
+      
+      </motion.div>
     </div>
   );
 }

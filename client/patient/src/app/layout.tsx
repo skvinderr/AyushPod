@@ -1,6 +1,15 @@
 import { AvatarWrapper } from '../avatar/AvatarWrapper';
+import { TopBar } from '../components/TopBar';
 import type { Metadata } from 'next';
+import { Poppins } from 'next/font/google';
 import './globals.css';
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-poppins',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'MediKiosk Patient App',
@@ -13,13 +22,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="antialiased min-h-screen bg-slate-50 text-slate-900 select-none overflow-hidden touch-none">
-        {/* Global Avatar overlay */}
+    <html lang="en" className={poppins.variable}>
+      <body className="antialiased min-h-screen bg-bg text-ink select-none overflow-hidden touch-none">
+        {/* Global avatar guide — anchored top-left on every screen */}
         <AvatarWrapper />
-        
-        {/* Main Content Area */}
-        <main className="w-full h-screen p-8 max-w-7xl mx-auto">
+
+        {/* Global top bar (clock, logo, language) */}
+        <TopBar />
+
+        {/* Main content area — left padding clears the top-left avatar */}
+        <main className="w-full h-[calc(100vh-100px)] px-8 pb-8 max-w-7xl mx-auto flex flex-col items-center">
           {children}
         </main>
       </body>

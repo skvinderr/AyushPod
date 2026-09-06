@@ -17,20 +17,20 @@ interface ToggleSwitchProps {
 export function ToggleSwitch({ checked, onChange, icon: Icon, label, onExplain, className }: ToggleSwitchProps) {
   return (
     <div className={cn(
-      "flex items-center gap-6 p-6 rounded-3xl border-4 transition-all duration-300",
-      checked ? "border-blue-600 bg-blue-50" : "border-slate-200 bg-white",
+      "flex items-center gap-6 p-6 rounded-[2rem] border-2 transition-all duration-300",
+      checked ? "border-primary bg-surface shadow-[var(--shadow-warm)] ring-4 ring-primary/20" : "border-hairline bg-surface shadow-[var(--shadow-soft)]",
       className
     )}>
       
       {/* Icon & Label */}
       <div className="flex items-center gap-6 flex-1 cursor-pointer" onClick={() => onChange(!checked)}>
         <div className={cn(
-          "p-4 rounded-2xl",
-          checked ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500"
+          "p-4 rounded-full transition-colors",
+          checked ? "bg-primary text-white" : "bg-primary-soft text-primary"
         )}>
           <Icon size={40} />
         </div>
-        <span className="text-3xl font-bold text-slate-800 select-none">{label}</span>
+        <span className="text-3xl font-semibold text-ink select-none">{label}</span>
       </div>
 
       {/* Action Buttons */}
@@ -44,7 +44,7 @@ export function ToggleSwitch({ checked, onChange, icon: Icon, label, onExplain, 
             e.stopPropagation();
             onExplain();
           }}
-          className="p-4 rounded-full bg-indigo-100 text-indigo-700 hover:bg-indigo-200 flex items-center justify-center outline-none focus:ring-4 focus:ring-indigo-500/50 shadow-sm"
+          className="p-4 rounded-full bg-primary-soft text-primary hover:bg-primary/15 flex items-center justify-center outline-none focus:ring-4 focus:ring-primary/40 shadow-sm"
           aria-label="Explain this"
         >
           <Volume2 size={32} />
@@ -54,8 +54,8 @@ export function ToggleSwitch({ checked, onChange, icon: Icon, label, onExplain, 
         <motion.button
           onClick={() => onChange(!checked)}
           className={cn(
-            "relative w-32 h-16 rounded-full transition-colors duration-300 flex items-center px-2 outline-none focus:ring-8 focus:ring-blue-500/50 shadow-inner",
-            checked ? "bg-blue-600" : "bg-slate-300"
+            "relative w-32 h-16 rounded-full transition-colors duration-300 flex items-center px-2 outline-none focus:ring-8 focus:ring-primary/40 shadow-inner",
+            checked ? "bg-primary" : "bg-hairline"
           )}
         >
           <motion.div
