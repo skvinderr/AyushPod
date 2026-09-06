@@ -41,6 +41,7 @@ export default function DoneScreen() {
         animate={{ scale: 1, opacity: 1, y: 0 }}
         className="w-full max-w-2xl bg-white rounded-[3rem] shadow-[0_4px_30px_rgba(0,0,0,0.05)] border-2 border-slate-100 flex flex-col relative overflow-hidden"
       >
+<<<<<<< HEAD
         
         {/* Success Header Area */}
         <div className="flex flex-col items-center justify-center p-12 bg-sky-50 border-b-2 border-dashed border-slate-300">
@@ -52,8 +53,13 @@ export default function DoneScreen() {
           <h1 className="text-5xl font-black text-slate-800 tracking-tight text-center leading-tight">
             You're All Set For<br/>Your Visit
           </h1>
+=======
+        <div className="text-[#20c997] mb-8 bg-[#20c997]/10 p-6 rounded-full">
+          <CheckCircle2 size={100} />
+>>>>>>> 2f8ced706fa712422c697077db4fd6d094ead9ed
         </div>
 
+<<<<<<< HEAD
         {/* Ticket Cutout Details (Left & Right semicircles to simulate ticket) */}
         <div className="absolute left-[-20px] top-[260px] w-10 h-10 bg-slate-50 rounded-full border-r-2 border-slate-300" />
         <div className="absolute right-[-20px] top-[260px] w-10 h-10 bg-slate-50 rounded-full border-l-2 border-slate-300" />
@@ -89,6 +95,18 @@ export default function DoneScreen() {
             <QrCode size={120} className="text-slate-800" />
             <span className="text-sm text-slate-500 max-w-xs">Scan this QR code to track your status on your phone.</span>
           </div>
+=======
+        {/* Token Card */}
+        <div className="mt-12 bg-sky-50 border-4 border-sky-100 rounded-[2rem] p-12 flex gap-12 items-center">
+          <div className="bg-white p-4 rounded-[2rem] shadow-sm border-2 border-slate-100">
+            <QrCode size={120} className="text-[#00a8e8]" />
+          </div>
+          <div className="flex flex-col items-start text-left">
+            <span className="text-2xl font-bold text-slate-500 uppercase tracking-widest">Your Token</span>
+            <span className="text-7xl font-black text-[#00a8e8] tracking-wider">{token}</span>
+          </div>
+        </div>
+>>>>>>> 2f8ced706fa712422c697077db4fd6d094ead9ed
 
         </div>
       </motion.div>

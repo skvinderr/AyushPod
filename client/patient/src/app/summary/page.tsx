@@ -51,8 +51,8 @@ export default function SummaryScreen() {
       icon: UserCircle,
       content: (
         <div className="flex flex-col gap-1">
-          <span className="text-sm font-bold text-slate-400 tracking-widest uppercase">Complaint</span>
-          <span className="text-3xl font-bold text-slate-800 capitalize">
+          <span className="text-sm font-bold text-muted tracking-widest uppercase">Complaint</span>
+          <span className="text-3xl font-bold text-ink capitalize">
             {chiefComplaint ? chiefComplaint.replace('_', ' ') : "Not specified"}
           </span>
         </div>
@@ -148,6 +148,7 @@ export default function SummaryScreen() {
                   isActive ? "border-[#00a8e8] shadow-lg shadow-[#00a8e8]/10" : isConfirmed ? "border-slate-100" : "border-slate-100"
                 )}
               >
+<<<<<<< HEAD
                 {/* Header Strip */}
                 <div className="flex items-center justify-between p-6 bg-slate-50 border-b-2 border-slate-100">
                   <div className="flex items-center gap-4">
@@ -158,6 +159,14 @@ export default function SummaryScreen() {
                       {isConfirmed ? <CheckCircle2 size={24} /> : <Icon size={24} />}
                     </div>
                     <span className="text-xl font-bold text-slate-700">{section.title}</span>
+=======
+                <div className="flex items-start gap-6">
+                  <div className={cn(
+                    "p-4 rounded-full",
+                    isConfirmed ? "bg-[#20c997]/20 text-[#20c997]" : isActive ? "bg-[#00a8e8]/20 text-[#00a8e8]" : "bg-slate-100 text-slate-500"
+                  )}>
+                    {isConfirmed ? <CheckCircle2 size={40} /> : <Icon size={40} />}
+>>>>>>> 2f8ced706fa712422c697077db4fd6d094ead9ed
                   </div>
                   
                   {(isActive || isConfirmed) && (
@@ -183,7 +192,21 @@ export default function SummaryScreen() {
                         <Check size={28} className="mr-3" />
                         <span className="text-2xl font-bold">Confirm</span>
                       </LargeTouchButton>
+<<<<<<< HEAD
                     </div>
+=======
+                      
+                      {!isConfirmed && (
+                        <LargeTouchButton 
+                          onClick={() => handleConfirm(section.id)} 
+                          className="py-4 px-12 bg-[#00a8e8] hover:bg-[#0090c8] text-white border-none shadow-lg shadow-[#00a8e8]/20"
+                        >
+                          <Check size={28} className="mr-3" />
+                          <span className="text-2xl font-bold">This is Correct</span>
+                        </LargeTouchButton>
+                      )}
+                    </motion.div>
+>>>>>>> 2f8ced706fa712422c697077db4fd6d094ead9ed
                   )}
                 </div>
               </motion.div>
@@ -191,7 +214,28 @@ export default function SummaryScreen() {
           })}
         </div>
 
+<<<<<<< HEAD
       </motion.div>
+=======
+        {/* Floating Submit Button */}
+        <AnimatePresence>
+          {allConfirmed && (
+            <motion.div 
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t-2 border-slate-200 p-8 flex justify-center z-50 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]"
+            >
+              <LargeTouchButton 
+                onClick={() => router.push('/done')}
+                className="w-[40rem] py-8 bg-[#00a8e8] hover:bg-[#0090c8] text-white border-none shadow-xl shadow-[#00a8e8]/30"
+              >
+                <span className="text-4xl font-bold">Confirm & Submit File</span>
+                <ArrowRight size={40} className="ml-4" />
+              </LargeTouchButton>
+            </motion.div>
+          )}
+        </AnimatePresence>
+>>>>>>> 2f8ced706fa712422c697077db4fd6d094ead9ed
 
       {/* Floating Submit Button */}
       <AnimatePresence>

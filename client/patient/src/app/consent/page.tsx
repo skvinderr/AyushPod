@@ -152,6 +152,7 @@ export default function ConsentScreen() {
               </motion.div>
             )}
 
+<<<<<<< HEAD
             {/* STEP 2: DETAILS */}
             {step === 'details' && (
               <motion.div 
@@ -168,6 +169,26 @@ export default function ConsentScreen() {
                     {inputValue || (idType === 'new' ? 'Enter Age' : 'Enter ID Number')}
                   </span>
                 </div>
+=======
+              <div className="mt-auto flex justify-center pt-8">
+                <LargeTouchButton 
+                  onClick={handleConsentSubmit} 
+                  className="w-[32rem] py-8"
+                  disabled={!canContinue}
+                >
+                  <span className="text-3xl">I Understand and Agree</span>
+                  <ArrowRight size={36} />
+                </LargeTouchButton>
+              </div>
+              
+              {!allInteracted && (
+                <p className="text-center text-xl text-red-500 font-medium">
+                  Please interact with all toggles to continue.
+                </p>
+              )}
+            </motion.div>
+          )}
+>>>>>>> 2f8ced706fa712422c697077db4fd6d094ead9ed
 
                 <div className="w-full max-w-lg">
                   <LargeNumpad value={inputValue} onChange={setInputValue} maxLength={14} />

@@ -65,14 +65,20 @@ export default function WelcomeScreen() {
   };
 
   return (
+<<<<<<< HEAD
     <div className="absolute inset-0 bg-bg flex flex-col pt-12 pb-8 px-12 overflow-hidden">
 
+=======
+    <div className="absolute inset-0 bg-slate-50 flex flex-col pt-12 pb-8 px-12 overflow-hidden">
+      
+>>>>>>> 2f8ced706fa712422c697077db4fd6d094ead9ed
       {/* Header / Logo */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="flex flex-col items-center justify-center gap-3 mb-14"
       >
+<<<<<<< HEAD
         <div className="flex items-center gap-4">
           <div className="bg-primary text-white p-4 rounded-2xl shadow-[0_16px_34px_-16px_rgba(31,122,110,0.9)]">
             <Stethoscope size={48} />
@@ -80,6 +86,12 @@ export default function WelcomeScreen() {
           <h1 className="text-6xl font-extrabold text-ink tracking-tight">MediKiosk</h1>
         </div>
         <p className="text-2xl text-muted font-medium">Choose your language • अपनी भाषा चुनें</p>
+=======
+        <div className="bg-[#00a8e8] text-white p-4 rounded-2xl shadow-lg">
+          <Stethoscope size={48} />
+        </div>
+        <h1 className="text-6xl font-extrabold text-slate-800 tracking-tight">MediKiosk</h1>
+>>>>>>> 2f8ced706fa712422c697077db4fd6d094ead9ed
       </motion.div>
 
       {/* Main Content Area */}
@@ -99,17 +111,29 @@ export default function WelcomeScreen() {
               whileTap={{ scale: 0.95 }}
               onClick={() => handleLanguageSelect(lang.id, lang.greeting)}
               className={cn(
+<<<<<<< HEAD
                 "flex flex-col items-center justify-center p-8 rounded-[1.75rem] w-56 h-56 gap-3 transition-all duration-300",
                 "bg-surface outline-none focus-visible:ring-8 focus-visible:ring-primary/40",
                 language === lang.id && hasSelected
                   ? "shadow-[var(--shadow-warm)] ring-4 ring-primary scale-105"
                   : "shadow-[var(--shadow-soft)] hover:-translate-y-1 hover:shadow-[var(--shadow-warm)] border border-hairline"
+=======
+                "flex flex-col items-center justify-center p-8 rounded-[2rem] w-56 h-56 gap-4 transition-all duration-300",
+                "bg-white outline-none focus-visible:ring-8 focus-visible:ring-[#00a8e8]/50",
+                language === lang.id && hasSelected
+                  ? "shadow-lg shadow-[#00a8e8]/20 ring-4 ring-[#00a8e8] scale-105"
+                  : "shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]"
+>>>>>>> 2f8ced706fa712422c697077db4fd6d094ead9ed
               )}
             >
               <span className="text-5xl">{lang.flag}</span>
               <span className={cn(
                 "text-4xl font-bold",
+<<<<<<< HEAD
                 language === lang.id && hasSelected ? "text-primary-deep" : "text-ink"
+=======
+                language === lang.id && hasSelected ? "text-[#00a8e8]" : "text-slate-800"
+>>>>>>> 2f8ced706fa712422c697077db4fd6d094ead9ed
               )}>
                 {lang.native}
               </span>
@@ -134,6 +158,7 @@ export default function WelcomeScreen() {
                 exit={{ opacity: 0, scale: 0.9 }}
                 onClick={startListening}
                 className={cn(
+<<<<<<< HEAD
                   "flex items-center gap-6 px-10 py-6 rounded-full bg-surface/80 backdrop-blur-md shadow-[var(--shadow-soft)] border border-hairline",
                   "transition-all duration-300",
                   isListening ? "ring-4 ring-primary border-primary" : ""
@@ -142,6 +167,16 @@ export default function WelcomeScreen() {
                 <div className={cn(
                   "p-4 rounded-full text-primary",
                   isListening ? "animate-pulse bg-primary text-white" : "bg-primary-soft"
+=======
+                  "flex items-center gap-6 px-10 py-6 rounded-full bg-white/80 backdrop-blur-md shadow-lg border-2 border-slate-100",
+                  "transition-all duration-300",
+                  isListening ? "ring-4 ring-[#00a8e8] border-[#00a8e8]" : ""
+                )}
+              >
+                <div className={cn(
+                  "p-4 rounded-full text-[#00a8e8]",
+                  isListening ? "animate-pulse bg-[#00a8e8] text-white" : "bg-sky-50"
+>>>>>>> 2f8ced706fa712422c697077db4fd6d094ead9ed
                 )}>
                   <Mic size={32} />
                 </div>
@@ -156,7 +191,11 @@ export default function WelcomeScreen() {
                 animate={{ opacity: 1, y: 0 }}
                 className="flex items-center gap-6"
               >
+<<<<<<< HEAD
                 <span className="text-2xl font-medium text-muted px-6 py-3 rounded-full animate-pulse">
+=======
+                <span className="text-2xl font-medium text-slate-500 px-6 py-3 rounded-full animate-pulse">
+>>>>>>> 2f8ced706fa712422c697077db4fd6d094ead9ed
                   Continuing automatically...
                 </span>
                 <LargeTouchButton 

@@ -142,7 +142,7 @@ export default function InterviewScreen() {
             className="w-full flex flex-col items-center gap-12"
           >
             {/* Question Text */}
-            <h1 className="text-5xl font-bold text-slate-800 text-center leading-tight">
+            <h1 className="text-5xl font-bold text-ink text-center leading-tight">
               {currentQuestion.text}
             </h1>
 
@@ -174,17 +174,17 @@ export default function InterviewScreen() {
                 whileTap={{ scale: 0.95 }}
                 onClick={startListening}
                 className={cn(
-                  "mt-8 flex items-center gap-6 px-10 py-6 rounded-full bg-white shadow-[0_4px_20px_rgba(0,0,0,0.05)] border-2 border-transparent",
-                  isListening ? "ring-4 ring-[#00a8e8]/30 border-[#00a8e8]" : ""
+                  "mt-8 flex items-center gap-6 px-10 py-6 rounded-full bg-surface shadow-[var(--shadow-soft)] border-2 border-hairline",
+                  isListening ? "ring-4 ring-primary/30 border-primary" : ""
                 )}
               >
                 <div className={cn(
-                  "p-4 rounded-full text-[#00a8e8]",
-                  isListening ? "bg-[#00a8e8] text-white animate-pulse" : "bg-sky-50"
+                  "p-4 rounded-full text-primary",
+                  isListening ? "bg-primary text-white animate-pulse" : "bg-primary-soft"
                 )}>
                   <Mic size={32} />
                 </div>
-                <span className="text-2xl font-semibold text-slate-700">
+                <span className="text-2xl font-semibold text-ink">
                   {isListening ? "Listening..." : "Tap to answer with your voice"}
                 </span>
               </motion.button>
@@ -195,7 +195,7 @@ export default function InterviewScreen() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mt-8 px-8 py-4 bg-blue-100 text-blue-800 rounded-full text-2xl font-medium animate-pulse"
+                className="mt-8 px-8 py-4 bg-primary-soft text-primary-deep rounded-full text-2xl font-medium animate-pulse"
               >
                 Recording your answer...
               </motion.div>
@@ -205,7 +205,7 @@ export default function InterviewScreen() {
         </AnimatePresence>
       </div>
 
-      <div className="mt-8 flex gap-6 w-full pt-6 border-t border-slate-100">
+      <div className="mt-8 flex gap-6 w-full pt-6 border-t border-hairline">
         <LargeTouchButton variant="secondary" onClick={() => router.push('/complaint')} className="w-48 py-6">
           Back
         </LargeTouchButton>

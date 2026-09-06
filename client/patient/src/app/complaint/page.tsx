@@ -137,6 +137,7 @@ export default function ComplaintScreen() {
             </button>
           </div>
 
+<<<<<<< HEAD
           {/* Right rail: drill-down OR voice prompt */}
           <div className="w-[380px] flex flex-col">
             <AnimatePresence mode="wait">
@@ -220,6 +221,24 @@ export default function ComplaintScreen() {
               )}
             </AnimatePresence>
           </div>
+=======
+        {/* Voice First Tile (Skip to free narration) */}
+        <div className="flex justify-center mt-4">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => handleSelect('voice_narration')}
+            className="flex items-center gap-8 bg-[#00a8e8] text-white rounded-full px-12 py-8 shadow-xl shadow-[#00a8e8]/20 hover:bg-[#0090c8] w-full max-w-4xl"
+          >
+            <div className="bg-white/20 p-6 rounded-full animate-pulse">
+              <Mic size={48} />
+            </div>
+            <div className="flex flex-col text-left">
+              <span className="text-4xl font-bold">Describe in your own words</span>
+              <span className="text-xl text-blue-100 mt-2">Skip the questions and just tell us what's wrong</span>
+            </div>
+          </motion.button>
+>>>>>>> 2f8ced706fa712422c697077db4fd6d094ead9ed
         </div>
       </motion.div>
     </div>
