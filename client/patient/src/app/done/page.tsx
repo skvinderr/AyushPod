@@ -37,7 +37,7 @@ export default function DoneScreen() {
         animate={{ scale: 1, opacity: 1, y: 0 }}
         className="max-w-4xl w-full bg-white rounded-[3rem] shadow-2xl p-16 flex flex-col items-center text-center relative overflow-hidden border-2 border-slate-100"
       >
-        <div className="text-green-500 mb-8 bg-green-50 p-6 rounded-full">
+        <div className="text-[#20c997] mb-8 bg-[#20c997]/10 p-6 rounded-full">
           <CheckCircle2 size={100} />
         </div>
         
@@ -50,13 +50,13 @@ export default function DoneScreen() {
         </p>
 
         {/* Token Card */}
-        <div className="mt-12 bg-blue-50 border-4 border-blue-100 rounded-3xl p-12 flex gap-12 items-center">
-          <div className="bg-white p-4 rounded-2xl shadow-sm border-2 border-slate-200">
-            <QrCode size={120} className="text-slate-800" />
+        <div className="mt-12 bg-sky-50 border-4 border-sky-100 rounded-[2rem] p-12 flex gap-12 items-center">
+          <div className="bg-white p-4 rounded-[2rem] shadow-sm border-2 border-slate-100">
+            <QrCode size={120} className="text-[#00a8e8]" />
           </div>
           <div className="flex flex-col items-start text-left">
             <span className="text-2xl font-bold text-slate-500 uppercase tracking-widest">Your Token</span>
-            <span className="text-7xl font-black text-blue-700 tracking-wider">{token}</span>
+            <span className="text-7xl font-black text-[#00a8e8] tracking-wider">{token}</span>
           </div>
         </div>
 

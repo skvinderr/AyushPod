@@ -147,8 +147,8 @@ export default function SummaryScreen() {
               >
                 <div className="flex items-start gap-6">
                   <div className={cn(
-                    "p-4 rounded-xl",
-                    isConfirmed ? "bg-green-100 text-green-600" : isActive ? "bg-blue-100 text-blue-600" : "bg-slate-100 text-slate-500"
+                    "p-4 rounded-full",
+                    isConfirmed ? "bg-[#20c997]/20 text-[#20c997]" : isActive ? "bg-[#00a8e8]/20 text-[#00a8e8]" : "bg-slate-100 text-slate-500"
                   )}>
                     {isConfirmed ? <CheckCircle2 size={40} /> : <Icon size={40} />}
                   </div>
@@ -184,7 +184,7 @@ export default function SummaryScreen() {
                       {!isConfirmed && (
                         <LargeTouchButton 
                           onClick={() => handleConfirm(section.id)} 
-                          className="py-4 px-12 bg-green-600 hover:bg-green-700 text-white border-none"
+                          className="py-4 px-12 bg-[#00a8e8] hover:bg-[#0090c8] text-white border-none shadow-lg shadow-[#00a8e8]/20"
                         >
                           <Check size={28} className="mr-3" />
                           <span className="text-2xl font-bold">This is Correct</span>
@@ -208,7 +208,7 @@ export default function SummaryScreen() {
             >
               <LargeTouchButton 
                 onClick={() => router.push('/done')}
-                className="w-[40rem] py-8 bg-blue-700 text-white border-none shadow-xl hover:bg-blue-800"
+                className="w-[40rem] py-8 bg-[#00a8e8] hover:bg-[#0090c8] text-white border-none shadow-xl shadow-[#00a8e8]/30"
               >
                 <span className="text-4xl font-bold">Confirm & Submit File</span>
                 <ArrowRight size={40} className="ml-4" />

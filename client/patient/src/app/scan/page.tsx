@@ -291,7 +291,7 @@ export default function ScanScreen() {
               exit={{ opacity: 0 }}
               className="flex-1 flex flex-col items-center justify-center gap-8"
             >
-              <div className="w-64 h-64 border-[16px] border-blue-100 border-t-blue-600 rounded-full animate-spin" />
+              <div className="w-64 h-64 border-[16px] border-slate-100 border-t-[#00a8e8] rounded-full animate-spin" />
               <h2 className="text-4xl font-bold text-slate-700">Reading Document...</h2>
             </motion.div>
           )}
@@ -313,7 +313,7 @@ export default function ScanScreen() {
               {/* Mock Data Card */}
               <div className="w-1/2 flex flex-col gap-8">
                 <div className="bg-white p-12 rounded-[3rem] shadow-xl border-2 border-slate-100 flex flex-col gap-6">
-                  <div className="flex items-center gap-4 text-blue-600 mb-4">
+                  <div className="flex items-center gap-4 text-[#00a8e8] mb-4">
                     <FileText size={48} />
                     <h2 className="text-4xl font-bold">Extracted Data</h2>
                   </div>
@@ -344,7 +344,7 @@ export default function ScanScreen() {
                   </LargeTouchButton>
                   <LargeTouchButton 
                     onClick={confirmDocument} 
-                    className="flex-1 bg-green-600 text-white hover:bg-green-700 border-none py-8"
+                    className="flex-1 bg-[#20c997] hover:bg-[#1bb88a] shadow-lg shadow-[#20c997]/20 text-white border-none py-8"
                   >
                     <Check size={40} className="mr-4" />
                     <span className="text-3xl">Looks Good</span>

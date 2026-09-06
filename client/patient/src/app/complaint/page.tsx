@@ -71,7 +71,7 @@ export default function ComplaintScreen() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => handleSelect('voice_narration')}
-            className="flex items-center gap-8 bg-blue-600 text-white rounded-[4rem] px-12 py-8 shadow-xl hover:bg-blue-700 w-full max-w-4xl"
+            className="flex items-center gap-8 bg-[#00a8e8] text-white rounded-full px-12 py-8 shadow-xl shadow-[#00a8e8]/20 hover:bg-[#0090c8] w-full max-w-4xl"
           >
             <div className="bg-white/20 p-6 rounded-full animate-pulse">
               <Mic size={48} />

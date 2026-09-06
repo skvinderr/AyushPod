@@ -15,25 +15,21 @@ interface LargeTouchButtonProps extends HTMLMotionProps<"button"> {
 }
 
 export const LargeTouchButton = React.forwardRef<HTMLButtonElement, LargeTouchButtonProps>(
-  ({ className, variant = 'primary', fullWidth, children, ...props }, ref) => {
+  ({ className, variant = 'primary', fullWidth, children, disabled, ...props }, ref) => {
     
-    const variants = {
-      primary: 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800',
-      secondary: 'bg-slate-200 text-slate-900 hover:bg-slate-300 active:bg-slate-400',
-      outline: 'border-4 border-blue-600 text-blue-600 hover:bg-blue-50 active:bg-blue-100',
-      ghost: 'bg-transparent text-slate-700 hover:bg-slate-100 active:bg-slate-200'
-    };
-
     return (
       <motion.button
         ref={ref}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: disabled ? 1 : 1.02 }}
+        whileTap={{ scale: disabled ? 1 : 0.95 }}
+        disabled={disabled}
         className={cn(
-          // Essential accessibility classes for public kiosks
-          'min-h-[80px] min-w-[80px] px-8 py-4 rounded-2xl text-2xl font-bold shadow-sm transition-colors',
-          'flex items-center justify-center gap-4 outline-none focus-visible:ring-8 focus-visible:ring-blue-500/50',
-          variants[variant],
+          "flex items-center justify-center font-bold transition-all duration-300 outline-none focus-visible:ring-8",
+          "rounded-full px-12 py-6 text-2xl min-h-[80px]",
+          variant === 'primary' 
+            ? "bg-[#00a8e8] text-white hover:bg-[#0090c8] shadow-lg shadow-[#00a8e8]/30 focus-visible:ring-[#00a8e8]/50" 
+            : "bg-white text-slate-700 border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 shadow-sm focus-visible:ring-slate-200/50",
+          disabled ? "opacity-50 cursor-not-allowed" : "",
           fullWidth ? 'w-full' : '',
           className
         )}

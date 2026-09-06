@@ -65,7 +65,7 @@ export default function WelcomeScreen() {
   };
 
   return (
-    <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col pt-12 pb-8 px-12 overflow-hidden">
+    <div className="absolute inset-0 bg-slate-50 flex flex-col pt-12 pb-8 px-12 overflow-hidden">
       
       {/* Header / Logo */}
       <motion.div 
@@ -73,10 +73,10 @@ export default function WelcomeScreen() {
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center justify-center gap-4 mb-16"
       >
-        <div className="bg-blue-600 text-white p-4 rounded-2xl shadow-lg">
+        <div className="bg-[#00a8e8] text-white p-4 rounded-2xl shadow-lg">
           <Stethoscope size={48} />
         </div>
-        <h1 className="text-6xl font-extrabold text-blue-900 tracking-tight">MediKiosk</h1>
+        <h1 className="text-6xl font-extrabold text-slate-800 tracking-tight">MediKiosk</h1>
       </motion.div>
 
       {/* Main Content Area */}
@@ -97,16 +97,16 @@ export default function WelcomeScreen() {
               onClick={() => handleLanguageSelect(lang.id, lang.greeting)}
               className={cn(
                 "flex flex-col items-center justify-center p-8 rounded-[2rem] w-56 h-56 gap-4 transition-all duration-300",
-                "border-4 shadow-xl outline-none focus-visible:ring-8 focus-visible:ring-blue-500/50",
+                "bg-white outline-none focus-visible:ring-8 focus-visible:ring-[#00a8e8]/50",
                 language === lang.id && hasSelected
-                  ? "border-blue-600 bg-blue-100 scale-105"
-                  : "border-white bg-white hover:border-blue-200"
+                  ? "shadow-lg shadow-[#00a8e8]/20 ring-4 ring-[#00a8e8] scale-105"
+                  : "shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]"
               )}
             >
               <span className="text-5xl">{lang.flag}</span>
               <span className={cn(
                 "text-4xl font-bold",
-                language === lang.id && hasSelected ? "text-blue-700" : "text-slate-800"
+                language === lang.id && hasSelected ? "text-[#00a8e8]" : "text-slate-800"
               )}>
                 {lang.native}
               </span>
@@ -131,14 +131,14 @@ export default function WelcomeScreen() {
                 exit={{ opacity: 0, scale: 0.9 }}
                 onClick={startListening}
                 className={cn(
-                  "flex items-center gap-6 px-10 py-6 rounded-full bg-white/80 backdrop-blur-md shadow-lg border-2 border-slate-200",
+                  "flex items-center gap-6 px-10 py-6 rounded-full bg-white/80 backdrop-blur-md shadow-lg border-2 border-slate-100",
                   "transition-all duration-300",
-                  isListening ? "ring-4 ring-blue-400 border-blue-400" : ""
+                  isListening ? "ring-4 ring-[#00a8e8] border-[#00a8e8]" : ""
                 )}
               >
                 <div className={cn(
-                  "p-4 rounded-full bg-blue-100 text-blue-600",
-                  isListening ? "animate-pulse bg-blue-600 text-white" : ""
+                  "p-4 rounded-full text-[#00a8e8]",
+                  isListening ? "animate-pulse bg-[#00a8e8] text-white" : "bg-sky-50"
                 )}>
                   <Mic size={32} />
                 </div>
@@ -153,12 +153,11 @@ export default function WelcomeScreen() {
                 animate={{ opacity: 1, y: 0 }}
                 className="flex items-center gap-6"
               >
-                <span className="text-2xl font-medium text-blue-800 bg-blue-100 px-6 py-3 rounded-full animate-pulse">
+                <span className="text-2xl font-medium text-slate-500 px-6 py-3 rounded-full animate-pulse">
                   Continuing automatically...
                 </span>
                 <LargeTouchButton 
                   onClick={handleNextClick} 
-                  className="bg-blue-700 text-white border-none py-6 px-12"
                 >
                   <span className="text-3xl">Next</span>
                   <ArrowRight size={36} />

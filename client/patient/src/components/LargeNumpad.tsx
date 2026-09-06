@@ -36,7 +36,7 @@ export function LargeNumpad({ value, onChange, maxLength = 10, className }: Larg
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => handlePress(key)}
-            className="h-24 bg-white border-2 border-slate-200 rounded-2xl shadow-sm text-4xl font-bold text-slate-800 flex items-center justify-center hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-blue-500/50"
+            className="h-24 bg-white border-2 border-slate-100 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.05)] text-4xl font-bold text-slate-800 flex items-center justify-center hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] focus:outline-none focus:ring-4 focus:ring-[#00a8e8]/50"
           >
             {key === 'del' ? <Delete size={40} className="text-slate-500" /> : key}
           </motion.button>

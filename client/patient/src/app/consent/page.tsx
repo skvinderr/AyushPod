@@ -187,7 +187,7 @@ export default function ConsentScreen() {
               <div className="mt-auto flex justify-center pt-8">
                 <LargeTouchButton 
                   onClick={handleConsentSubmit} 
-                  className="w-[32rem] py-8 bg-green-600 hover:bg-green-700 active:bg-green-800 disabled:bg-slate-300 disabled:text-slate-500"
+                  className="w-[32rem] py-8"
                   disabled={!canContinue}
                 >
                   <span className="text-3xl">I Understand and Agree</span>

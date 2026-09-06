@@ -17,16 +17,16 @@ interface ToggleSwitchProps {
 export function ToggleSwitch({ checked, onChange, icon: Icon, label, onExplain, className }: ToggleSwitchProps) {
   return (
     <div className={cn(
-      "flex items-center gap-6 p-6 rounded-3xl border-4 transition-all duration-300",
-      checked ? "border-blue-600 bg-blue-50" : "border-slate-200 bg-white",
+      "flex items-center gap-6 p-6 rounded-[2rem] border-2 transition-all duration-300",
+      checked ? "border-[#00a8e8] bg-white shadow-lg shadow-[#00a8e8]/20 ring-4 ring-[#00a8e8]/30" : "border-transparent bg-white shadow-[0_4px_20px_rgba(0,0,0,0.05)]",
       className
     )}>
       
       {/* Icon & Label */}
       <div className="flex items-center gap-6 flex-1 cursor-pointer" onClick={() => onChange(!checked)}>
         <div className={cn(
-          "p-4 rounded-2xl",
-          checked ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500"
+          "p-4 rounded-full transition-colors",
+          checked ? "bg-[#00a8e8] text-white" : "bg-sky-50 text-[#00a8e8]"
         )}>
           <Icon size={40} />
         </div>
@@ -44,7 +44,7 @@ export function ToggleSwitch({ checked, onChange, icon: Icon, label, onExplain, 
             e.stopPropagation();
             onExplain();
           }}
-          className="p-4 rounded-full bg-indigo-100 text-indigo-700 hover:bg-indigo-200 flex items-center justify-center outline-none focus:ring-4 focus:ring-indigo-500/50 shadow-sm"
+          className="p-4 rounded-full bg-sky-50 text-[#00a8e8] hover:bg-sky-100 flex items-center justify-center outline-none focus:ring-4 focus:ring-[#00a8e8]/50 shadow-sm"
           aria-label="Explain this"
         >
           <Volume2 size={32} />
@@ -54,8 +54,8 @@ export function ToggleSwitch({ checked, onChange, icon: Icon, label, onExplain, 
         <motion.button
           onClick={() => onChange(!checked)}
           className={cn(
-            "relative w-32 h-16 rounded-full transition-colors duration-300 flex items-center px-2 outline-none focus:ring-8 focus:ring-blue-500/50 shadow-inner",
-            checked ? "bg-blue-600" : "bg-slate-300"
+            "relative w-32 h-16 rounded-full transition-colors duration-300 flex items-center px-2 outline-none focus:ring-8 focus:ring-[#00a8e8]/50 shadow-inner",
+            checked ? "bg-[#00a8e8]" : "bg-slate-200"
           )}
         >
           <motion.div

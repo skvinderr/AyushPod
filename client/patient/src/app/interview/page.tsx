@@ -166,13 +166,13 @@ export default function InterviewScreen() {
                 whileTap={{ scale: 0.95 }}
                 onClick={startListening}
                 className={cn(
-                  "mt-8 flex items-center gap-6 px-10 py-6 rounded-full bg-white/80 backdrop-blur-md shadow-lg border-2 border-slate-200",
-                  isListening ? "ring-4 ring-blue-400 border-blue-400" : ""
+                  "mt-8 flex items-center gap-6 px-10 py-6 rounded-full bg-white shadow-[0_4px_20px_rgba(0,0,0,0.05)] border-2 border-transparent",
+                  isListening ? "ring-4 ring-[#00a8e8]/30 border-[#00a8e8]" : ""
                 )}
               >
                 <div className={cn(
-                  "p-4 rounded-full text-blue-600",
-                  isListening ? "bg-blue-600 text-white animate-pulse" : "bg-blue-100"
+                  "p-4 rounded-full text-[#00a8e8]",
+                  isListening ? "bg-[#00a8e8] text-white animate-pulse" : "bg-sky-50"
                 )}>
                   <Mic size={32} />
                 </div>
