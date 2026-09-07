@@ -4,21 +4,22 @@ import React, { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Stethoscope, HelpCircle, Globe, Clock, RotateCcw, Check } from 'lucide-react';
-import { AvatarController } from './AvatarController';
-import { FallbackAvatar } from './FallbackAvatar';
+import { AvatarStage } from './AvatarStage';
 import { useAvatar } from '../store/useAvatar';
 import { useSessionStore } from '../store/useSessionStore';
 
 /*
  * KioskShell — the persistent split frame for the whole kiosk.
  *
- * Left: a deep-teal "consultation room" guide rail where Aaya (the doctor
- * avatar) stands full-height and gestures toward the content. Because the rail
- * lives in the root layout, the single WebGL canvas mounts once and Aaya
- * animates continuously across route changes — she never remounts or flickers.
+ * Left: a deep-teal "consultation room" where Aaya (the doctor avatar) stands
+ * when idle. Right: a warm working area with a top flow bar (which of the 5
+ * intake steps you're on + clock + language + idle reset) and the current
+ * screen below.
  *
- * Right: a warm working area with a top flow bar (which of the 5 intake steps
- * you're on + clock + language + idle reset) and the current screen below.
+ * Aaya herself is rendered by <AvatarStage>, a single full-viewport overlay
+ * mounted once here — she animates continuously across route changes (never
+ * remounts) and can step out of this rail onto the content to guide, then
+ * retreat home.
  */
 
 const LANG_LABELS: Record<string, string> = {
@@ -35,15 +36,6 @@ const STEPS = [
 
 const IDLE_WARN_MS = 120_000; // 2 min of no touch → start the reset countdown
 const RESET_SECONDS = 20;
-
-function isWebGLAvailable() {
-  try {
-    const canvas = document.createElement('canvas');
-    return !!(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
-  } catch {
-    return false;
-  }
-}
 
 /** Horizontal 5-step tracker for the intake sequence. */
 function FlowProgress({ pathname }: { pathname: string }) {
@@ -93,10 +85,8 @@ function FlowProgress({ pathname }: { pathname: string }) {
 export function KioskShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [useWebGL, setUseWebGL] = useState(true);
 
   const state = useAvatar((s) => s.state);
-  const caption = useAvatar((s) => s.caption);
   const speak = useAvatar((s) => s.speak);
   const language = useSessionStore((s) => s.language);
   const resetSession = useSessionStore((s) => s.resetSession);
@@ -107,10 +97,6 @@ export function KioskShell({ children }: { children: React.ReactNode }) {
 
   const showFlow = pathname !== '/' && pathname !== '/urgent' && pathname !== '/done';
   const isUrgent = pathname === '/urgent';
-
-  useEffect(() => {
-    if (!isWebGLAvailable()) setUseWebGL(false);
-  }, []);
 
   // Clock
   useEffect(() => {
@@ -163,6 +149,12 @@ export function KioskShell({ children }: { children: React.ReactNode }) {
       <aside className="rail relative w-[360px] shrink-0 h-full flex flex-col overflow-hidden">
         <div className="rail-texture absolute inset-0 pointer-events-none" />
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'var(--rail-glow)' }} />
+        {/* soft floor ellipse — the spot Aaya stands on when she is home */}
+        <div
+          aria-hidden
+          className="absolute left-1/2 -translate-x-1/2 bottom-[150px] w-[74%] h-20 rounded-[50%] pointer-events-none"
+          style={{ background: 'radial-gradient(closest-side, rgba(255,255,255,0.16), transparent)' }}
+        />
 
         <div className="relative z-10 flex flex-col h-full px-8 pt-8 pb-7">
           {/* Brand */}
@@ -176,41 +168,15 @@ export function KioskShell({ children }: { children: React.ReactNode }) {
             </div>
           </div>
 
-          {/* Aaya — the single persistent canvas */}
-          <div className="flex-1 min-h-0 relative -mx-2">
-            {useWebGL ? <AvatarController /> : <FallbackAvatar />}
-          </div>
+          {/* Aaya stands here (rendered by the AvatarStage overlay above) */}
+          <div className="flex-1 min-h-0" />
 
-          {/* Caption while speaking, else a calm nameplate */}
-          <div className="min-h-[92px] flex items-end">
-            <AnimatePresence mode="wait">
-              {caption ? (
-                <motion.div
-                  key="bubble"
-                  initial={{ opacity: 0, y: 10, scale: 0.96 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                  transition={{ type: 'spring', stiffness: 240, damping: 22 }}
-                  className="relative w-full rounded-[1.5rem] bg-white px-5 py-4 shadow-xl"
-                >
-                  <div className="absolute -top-2 left-10 w-4 h-4 rotate-45 bg-white" />
-                  <p className="text-xl font-semibold text-ink leading-snug">{caption}</p>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="tag"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="w-full"
-                >
-                  <p className="text-2xl font-bold text-white leading-tight">Hello, I'm Aaya</p>
-                  <p className="text-base text-white/75 mt-0.5">
-                    {state === 'listening' ? "I'm listening…" : "I'll guide you the whole way."}
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
+          {/* Nameplate */}
+          <div className="min-h-[64px]">
+            <p className="text-2xl font-bold text-white leading-tight">Hello, I'm Aaya</p>
+            <p className="text-base text-white/75 mt-0.5">
+              {state === 'listening' ? "I'm listening…" : state === 'talking' ? 'Guiding you…' : "I'll guide you the whole way."}
+            </p>
           </div>
 
           {/* Help */}
@@ -266,6 +232,9 @@ export function KioskShell({ children }: { children: React.ReactNode }) {
         {/* Screen content */}
         <div className="relative z-10 flex-1 min-h-0 px-10 pb-8">{children}</div>
       </main>
+
+      {/* Aaya overlay — steps out of the rail onto the content to guide */}
+      <AvatarStage />
     </div>
   );
 }

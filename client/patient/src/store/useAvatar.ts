@@ -38,6 +38,7 @@ interface AvatarStore {
 }
 
 let mouthTimer: ReturnType<typeof setInterval> | null = null;
+let fallbackTimer: ReturnType<typeof setTimeout> | null = null;
 
 function startMouth(set: (partial: Partial<AvatarStore>) => void) {
   stopMouth(set);
@@ -73,17 +74,31 @@ export const useAvatar = create<AvatarStore>((set) => ({
     const wantsStage = !!o.stage;
     const gesture = o.gesture ?? (wantsStage ? 'present' : 'none');
 
-    const onSpeakStart = () => {
-      set({ state: 'talking', caption: text });
-      if (wantsStage) set({ presence: 'stage', gesture });
-      startMouth(set);
-    };
-    const onSpeakEnd = () => {
+    // Clear any in-flight line so a new one takes over cleanly.
+    if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
+
+    // Enter IMMEDIATELY (synchronously) so guidance is always visible — even on
+    // kiosks whose SpeechSynthesis has no installed voices and never fires
+    // onstart/onend. TTS, when it works, just adds the voice on top.
+    set({ state: 'talking', caption: text });
+    if (wantsStage) set({ presence: 'stage', gesture });
+    startMouth(set);
+
+    let ended = false;
+    const finish = () => {
+      if (ended) return;
+      ended = true;
+      if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
       stopMouth(set);
-      // Retreat to the corner after guiding; the caption is only ever shown
-      // while she is actively speaking, so always clear it here.
+      // Retreat to the corner after guiding; caption is only shown while
+      // actively speaking, so always clear it here.
       set({ state: 'idle', caption: '', gesture: 'none', presence: 'corner' });
     };
+
+    // Reading-time fallback so she always retreats, TTS or not (~150 wpm).
+    const words = text.trim().split(/\s+/).filter(Boolean).length;
+    const estMs = Math.min(12_000, Math.max(2_600, words * 380));
+    fallbackTimer = setTimeout(finish, estMs);
 
     // Browser SpeechSynthesis. Swappable for Sarvam TTS later.
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -94,15 +109,19 @@ export const useAvatar = create<AvatarStore>((set) => ({
       utterance.rate = 0.95;
       utterance.pitch = 1.05;
 
-      utterance.onstart = onSpeakStart;
-      utterance.onend = onSpeakEnd;
-      utterance.onerror = onSpeakEnd;
+      // If TTS actually runs, let its real end drive the retreat (more accurate
+      // than the estimate); the fallback timer still covers the silent case.
+      utterance.onend = finish;
+      utterance.onerror = finish;
 
       window.speechSynthesis.speak(utterance);
-    } else {
-      // Unsupported environment — simulate a talking beat so the UI still animates.
-      onSpeakStart();
-      setTimeout(onSpeakEnd, 3000);
     }
   },
 }));
+
+// Dev-only affordance: expose the store so the avatar can be driven/pinned from
+// the browser console (e.g. useAvatar.setState({ presence: 'stage' })) while
+// tuning her look. Stripped from production builds.
+if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
+  (window as unknown as { useAvatar?: typeof useAvatar }).useAvatar = useAvatar;
+}
