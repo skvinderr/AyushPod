@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useAvatar } from '../../store/useAvatar';
 import { useSessionStore } from '../../store/useSessionStore';
+import { StepIndicator } from '../../components/StepIndicator';
 import { IconTile } from '../../components/IconTile';
 import { LargeTouchButton } from '../../components/LargeTouchButton';
 import { Camera, ImagePlus, X, Check, ArrowRight, Loader2, RefreshCcw, FileText } from 'lucide-react';
@@ -187,9 +188,16 @@ export default function ScanScreen() {
   };
 
   return (
-    <div className="absolute inset-0 bg-slate-50 flex flex-col pt-12 pb-8 px-12 overflow-hidden">
+    <div className="w-full h-full flex flex-col items-center justify-center pb-12">
       
-      <div className="flex-1 flex flex-col max-w-6xl mx-auto w-full h-full relative">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full max-w-6xl bg-surface rounded-[2rem] shadow-[var(--shadow-warm)] border border-hairline p-12 flex flex-col min-h-[75vh]"
+      >
+        <StepIndicator currentStep={4} totalSteps={4} title="Scan Documents" />
+        <p className="text-2xl text-muted mb-8">Have any past prescriptions or reports? Let's scan them.</p>
+
         <AnimatePresence mode="wait">
           
           {/* STEP 1: SELECT OR SKIP */}
@@ -201,7 +209,6 @@ export default function ScanScreen() {
               exit={{ opacity: 0 }}
               className="flex-1 flex flex-col items-center justify-center gap-12 w-full"
             >
-              <h1 className="text-5xl font-bold text-slate-800">Scan Documents</h1>
               
               <div className="flex gap-8 w-full justify-center">
                 <IconTile 
@@ -259,7 +266,7 @@ export default function ScanScreen() {
                 <div className="absolute inset-8 border-4 border-white/50 rounded-2xl pointer-events-none" />
                 
                 {qualityWarning && (
-                  <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-red-600 text-white px-8 py-4 rounded-full text-2xl font-bold flex items-center gap-4">
+                  <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-coral text-white px-8 py-4 rounded-full text-2xl font-bold flex items-center gap-4">
                     <X size={32} />
                     {qualityWarning}
                   </div>
@@ -291,8 +298,8 @@ export default function ScanScreen() {
               exit={{ opacity: 0 }}
               className="flex-1 flex flex-col items-center justify-center gap-8"
             >
-              <div className="w-64 h-64 border-[16px] border-slate-100 border-t-[#00a8e8] rounded-full animate-spin" />
-              <h2 className="text-4xl font-bold text-slate-700">Reading Document...</h2>
+              <div className="w-64 h-64 border-[16px] border-hairline border-t-primary rounded-full animate-spin" />
+              <h2 className="text-4xl font-bold text-ink">Reading Document...</h2>
             </motion.div>
           )}
 
@@ -312,39 +319,39 @@ export default function ScanScreen() {
 
               {/* Mock Data Card */}
               <div className="w-1/2 flex flex-col gap-8">
-                <div className="bg-white p-12 rounded-[3rem] shadow-xl border-2 border-slate-100 flex flex-col gap-6">
-                  <div className="flex items-center gap-4 text-[#00a8e8] mb-4">
+                <div className="bg-surface p-12 rounded-[2rem] shadow-[var(--shadow-warm)] border border-hairline flex flex-col gap-6">
+                  <div className="flex items-center gap-4 text-primary mb-4">
                     <FileText size={48} />
                     <h2 className="text-4xl font-bold">Extracted Data</h2>
                   </div>
-                  
+
                   <div className="space-y-4 text-3xl">
-                    <div className="flex justify-between border-b pb-4">
-                      <span className="text-slate-500">Document Type</span>
-                      <span className="font-bold text-slate-800">Blood Report</span>
+                    <div className="flex justify-between border-b border-hairline pb-4">
+                      <span className="text-muted">Document Type</span>
+                      <span className="font-bold text-ink">Blood Report</span>
                     </div>
-                    <div className="flex justify-between border-b pb-4">
-                      <span className="text-slate-500">Date</span>
-                      <span className="font-bold text-slate-800">12 Aug 2026</span>
+                    <div className="flex justify-between border-b border-hairline pb-4">
+                      <span className="text-muted">Date</span>
+                      <span className="font-bold text-ink">12 Aug 2026</span>
                     </div>
                     <div className="flex justify-between pb-4">
-                      <span className="text-slate-500">Key Value</span>
-                      <span className="font-bold text-slate-800">Hemoglobin: 12.5</span>
+                      <span className="text-muted">Key Value</span>
+                      <span className="font-bold text-ink">Hemoglobin: 12.5</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex gap-6 mt-4">
-                  <LargeTouchButton 
-                    onClick={rejectDocument} 
-                    className="flex-1 bg-red-100 text-red-700 hover:bg-red-200 border-none py-8"
+                  <LargeTouchButton
+                    onClick={rejectDocument}
+                    className="flex-1 bg-coral-soft text-coral hover:bg-coral/20 border-none py-8"
                   >
                     <RefreshCcw size={40} className="mr-4" />
                     <span className="text-3xl">Retake</span>
                   </LargeTouchButton>
-                  <LargeTouchButton 
-                    onClick={confirmDocument} 
-                    className="flex-1 bg-[#20c997] hover:bg-[#1bb88a] shadow-lg shadow-[#20c997]/20 text-white border-none py-8"
+                  <LargeTouchButton
+                    onClick={confirmDocument}
+                    className="flex-1 bg-primary hover:bg-primary-deep shadow-[var(--shadow-warm)] text-white border-none py-8"
                   >
                     <Check size={40} className="mr-4" />
                     <span className="text-3xl">Looks Good</span>
@@ -363,14 +370,14 @@ export default function ScanScreen() {
               initial={{ opacity: 0, y: 100 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 100 }}
-              className="absolute bottom-0 left-0 right-0 h-48 bg-white/80 backdrop-blur-md border-t-2 border-slate-200 rounded-t-[3rem] px-12 py-6 flex items-center gap-6 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]"
+              className="absolute bottom-0 left-0 right-0 h-48 bg-surface/85 backdrop-blur-md border-t border-hairline rounded-t-[2rem] px-12 py-6 flex items-center gap-6 shadow-[0_-10px_40px_-15px_rgba(70,55,40,0.15)]"
             >
-              <span className="text-2xl font-bold text-slate-700 w-32">Scanned ({docs.length})</span>
+              <span className="text-2xl font-bold text-ink w-32">Scanned ({docs.length})</span>
               <div className="flex-1 flex gap-4 overflow-x-auto pb-2">
                 {docs.map(doc => (
-                  <div key={doc.id} className="w-32 h-32 flex-shrink-0 rounded-2xl overflow-hidden border-4 border-slate-200 shadow-sm relative">
+                  <div key={doc.id} className="w-32 h-32 flex-shrink-0 rounded-2xl overflow-hidden border-4 border-hairline shadow-sm relative">
                     <img src={doc.dataUrl} className="w-full h-full object-cover" />
-                    <div className="absolute top-2 right-2 bg-green-500 rounded-full p-1 text-white">
+                    <div className="absolute top-2 right-2 bg-primary rounded-full p-1 text-white">
                       <Check size={16} />
                     </div>
                   </div>
@@ -379,8 +386,7 @@ export default function ScanScreen() {
             </motion.div>
           )}
         </AnimatePresence>
-
-      </div>
+      </motion.div>
     </div>
   );
 }

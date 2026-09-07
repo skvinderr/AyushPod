@@ -30,23 +30,23 @@ export function IconTile({
       disabled={disabled}
       className={cn(
         "flex flex-col items-center justify-center p-8 gap-6 transition-all duration-300 outline-none",
-        "rounded-[2rem] border-2 bg-white",
+        "rounded-[1.75rem] border-2 bg-surface",
         selected
-          ? "border-[#00a8e8] shadow-lg shadow-[#00a8e8]/20 ring-4 ring-[#00a8e8]/30"
-          : "border-transparent shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]",
-        disabled ? "opacity-50 cursor-not-allowed grayscale" : "cursor-pointer focus-visible:ring-4 focus-visible:ring-[#00a8e8]/50",
+          ? "border-primary shadow-[var(--shadow-warm)] ring-4 ring-primary/25"
+          : "border-hairline shadow-[var(--shadow-soft)] hover:-translate-y-1 hover:shadow-[var(--shadow-warm)]",
+        disabled ? "opacity-50 cursor-not-allowed grayscale" : "cursor-pointer focus-visible:ring-4 focus-visible:ring-primary/40",
         className
       )}
     >
       <div className={cn(
         "p-6 rounded-full transition-colors duration-300",
-        selected ? "bg-[#00a8e8] text-white" : "bg-sky-50 text-[#00a8e8]"
+        selected ? "bg-primary text-white" : "bg-primary-soft text-primary"
       )}>
         <Icon size={48} />
       </div>
       <span className={cn(
-        "text-2xl font-bold text-center",
-        selected ? "text-[#00a8e8]" : "text-slate-700"
+        "text-2xl font-semibold text-center",
+        selected ? "text-primary-deep" : "text-ink"
       )}>
         {label}
       </span>

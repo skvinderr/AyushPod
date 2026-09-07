@@ -1,26 +1,74 @@
 @import "tailwindcss";
 
+/*
+ * MediKiosk warm design system
+ * Cream / teal-led / coral-for-alerts-only / amber-for-in-progress.
+ * Kiosk is always light — no dark mode.
+ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #faf7f2;          /* warm cream page background */
+  --surface: #ffffff;     /* cards / panels */
+  --surface-warm: #f3ede3;/* subtle warm fill (rails, inactive) */
+
+  --primary: #2a9d8f;     /* teal — the primary action color */
+  --primary-deep: #1f7a6e;/* pressed / hover teal */
+  --primary-soft: #e2f1ee;/* teal tint for soft backgrounds */
+
+  --coral: #e76f51;       /* alerts / urgent ONLY */
+  --coral-soft: #fbe6e0;
+  --amber: #f4a261;       /* in-progress / pending */
+  --amber-soft: #fcecdb;
+
+  --ink: #2c2a28;         /* warm near-black text */
+  --muted: #7e8b84;       /* secondary text */
+  --hairline: #e7e0d5;    /* warm borders */
+
+  --shadow-warm: 0 18px 40px -20px rgba(70, 55, 40, 0.28);
+  --shadow-soft: 0 8px 24px -12px rgba(70, 55, 40, 0.18);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-warm: var(--surface-warm);
+  --color-primary: var(--primary);
+  --color-primary-deep: var(--primary-deep);
+  --color-primary-soft: var(--primary-soft);
+  --color-coral: var(--coral);
+  --color-coral-soft: var(--coral-soft);
+  --color-amber: var(--amber);
+  --color-amber-soft: var(--amber-soft);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-hairline: var(--hairline);
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Calm motion for anyone who asks for it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Soft warm scrollbar for the rare scroll (thumbnail strips etc.) */
+::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--hairline);
+  border-radius: 999px;
 }

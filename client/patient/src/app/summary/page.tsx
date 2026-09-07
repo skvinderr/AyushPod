@@ -7,6 +7,7 @@ import { useAvatar } from '../../store/useAvatar';
 import { useSessionStore } from '../../store/useSessionStore';
 import { interviewTree } from '../../lib/interviewTree';
 import { LargeTouchButton } from '../../components/LargeTouchButton';
+import { StepIndicator } from '../../components/StepIndicator';
 import { CheckCircle2, Edit3, ArrowRight, UserCircle, ActivitySquare, FileText, Check } from 'lucide-react';
 import { cn } from '../../components/LargeTouchButton';
 
@@ -22,12 +23,11 @@ interface Section {
 export default function SummaryScreen() {
   const router = useRouter();
   const { speak } = useAvatar();
-  const { language, patientInfo, chiefComplaint, historyAnswers } = useSessionStore();
+  const { language, chiefComplaint, historyAnswers } = useSessionStore();
 
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const [confirmedSections, setConfirmedSections] = useState<Record<string, boolean>>({});
 
-  // Helper to format history answers
   const formatHPI = () => {
     if (!chiefComplaint || chiefComplaint === 'voice_narration') return "User described symptoms via voice recording.";
     const questions = interviewTree[chiefComplaint] || interviewTree['general'];
@@ -37,7 +37,7 @@ export default function SummaryScreen() {
       if (q) {
         const opt = q.options.find(o => o.id === optionId);
         if (opt) {
-          text += `${q.text.replace('?', '')}: ${opt.label}. `;
+          text += `${q.text.replace('?', '')}: ${opt.label}\n`;
         }
       }
     });
@@ -47,11 +47,14 @@ export default function SummaryScreen() {
   const sections: Section[] = [
     {
       id: 'complaint',
-      title: 'Chief Complaint',
+      title: 'Selected Specialty / Complaint',
       icon: UserCircle,
       content: (
-        <div className="text-3xl text-slate-700 capitalize">
-          {chiefComplaint ? chiefComplaint.replace('_', ' ') : "Not specified"}
+        <div className="flex flex-col gap-1">
+          <span className="text-sm font-semibold text-muted tracking-widest uppercase">Complaint</span>
+          <span className="text-3xl font-bold text-ink capitalize">
+            {chiefComplaint ? chiefComplaint.replace('_', ' ') : "Not specified"}
+          </span>
         </div>
       ),
       spokenText: `Your main reason for visiting today is: ${chiefComplaint ? chiefComplaint.replace('_', ' ') : "Not specified"}.`,
@@ -59,35 +62,34 @@ export default function SummaryScreen() {
     },
     {
       id: 'hpi',
-      title: 'History of Present Illness',
+      title: 'Interview Answers',
       icon: ActivitySquare,
       content: (
-        <div className="text-2xl text-slate-700 leading-relaxed">
-          {formatHPI()}
+        <div className="flex flex-col gap-4">
+          {formatHPI().split('\n').filter(Boolean).map((line, i) => {
+            const [q, a] = line.split(':');
+            return (
+              <div key={i} className="flex flex-col gap-1">
+                <span className="text-sm font-semibold text-muted tracking-widest uppercase">{q}</span>
+                <span className="text-xl font-bold text-ink">{a}</span>
+              </div>
+            );
+          })}
         </div>
       ),
-      spokenText: `You mentioned: ${formatHPI()}`,
+      spokenText: `You answered the medical history questions.`,
       editRoute: '/interview'
     },
     {
-      id: 'history',
-      title: 'Past / Personal History',
-      icon: FileText,
-      content: (
-        <div className="text-2xl text-slate-700 italic">
-          No significant past medical history reported.
-        </div>
-      ),
-      spokenText: `You reported no significant past medical history.`,
-      editRoute: '/complaint'
-    },
-    {
       id: 'documents',
-      title: 'Scanned Documents',
+      title: 'Medical Documents',
       icon: FileText,
       content: (
-        <div className="text-2xl text-slate-700">
-          1 Document attached (Blood Report).
+        <div className="flex flex-col gap-1">
+          <span className="text-sm font-semibold text-muted tracking-widest uppercase">Attached</span>
+          <span className="text-2xl font-bold text-ink">
+            1 Document (Blood Report)
+          </span>
         </div>
       ),
       spokenText: `You have attached 1 document for the doctor to review.`,
@@ -95,7 +97,6 @@ export default function SummaryScreen() {
     }
   ];
 
-  // Speak the active section
   useEffect(() => {
     if (activeSectionIndex < sections.length) {
       speak(sections[activeSectionIndex].spokenText, language);
@@ -119,15 +120,17 @@ export default function SummaryScreen() {
   const allConfirmed = sections.every(s => confirmedSections[s.id]);
 
   return (
-    <div className="absolute inset-0 bg-slate-50 flex flex-col pt-8 pb-8 px-12 overflow-y-auto">
-      
-      <div className="max-w-5xl mx-auto w-full flex flex-col gap-8">
-        <div className="text-center mb-4">
-          <h1 className="text-5xl font-bold text-slate-800">Review Your File</h1>
-          <p className="text-2xl text-slate-600 mt-4">Please verify the information below before we send it to your doctor.</p>
-        </div>
+    <div className="w-full h-full flex flex-col items-center justify-center pb-32">
 
-        <div className="flex flex-col gap-6 w-full pb-32">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full max-w-4xl bg-surface rounded-[2rem] shadow-[var(--shadow-warm)] border border-hairline p-12 flex flex-col"
+      >
+        <StepIndicator currentStep={4} totalSteps={4} title="Review & Confirm Details" />
+        <p className="text-2xl text-muted mb-12">Please check and confirm your information.</p>
+
+        <div className="flex flex-col gap-8 w-full">
           {sections.map((section, idx) => {
             const isConfirmed = confirmedSections[section.id];
             const isActive = idx === activeSectionIndex;
@@ -136,88 +139,78 @@ export default function SummaryScreen() {
             const Icon = section.icon;
 
             return (
-              <motion.div 
+              <motion.div
                 key={section.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: isLocked ? 0.4 : 1, y: 0 }}
                 className={cn(
-                  "bg-white rounded-[2rem] p-8 shadow-md border-4 transition-all duration-300",
-                  isActive ? "border-blue-400 ring-4 ring-blue-100" : isConfirmed ? "border-green-200" : "border-slate-100"
+                  "flex flex-col border-2 rounded-[2rem] transition-all duration-300 relative overflow-hidden",
+                  isActive ? "border-primary shadow-[var(--shadow-warm)]" : "border-hairline"
                 )}
               >
-                <div className="flex items-start gap-6">
-                  <div className={cn(
-                    "p-4 rounded-full",
-                    isConfirmed ? "bg-[#20c997]/20 text-[#20c997]" : isActive ? "bg-[#00a8e8]/20 text-[#00a8e8]" : "bg-slate-100 text-slate-500"
-                  )}>
-                    {isConfirmed ? <CheckCircle2 size={40} /> : <Icon size={40} />}
-                  </div>
-                  
-                  <div className="flex-1">
-                    <h2 className="text-3xl font-bold text-slate-800 mb-4">{section.title}</h2>
+                {/* Header Strip */}
+                <div className="flex items-center justify-between p-6 bg-surface-warm border-b border-hairline">
+                  <div className="flex items-center gap-4">
                     <div className={cn(
-                      "transition-all duration-300",
-                      isConfirmed ? "opacity-70" : "opacity-100"
+                      "p-2 rounded-full",
+                      isConfirmed ? "text-primary" : isActive ? "text-primary" : "text-muted"
                     )}>
-                      {section.content}
+                      {isConfirmed ? <CheckCircle2 size={24} /> : <Icon size={24} />}
                     </div>
+                    <span className="text-xl font-semibold text-ink">{section.title}</span>
                   </div>
+
+                  {(isActive || isConfirmed) && (
+                    <button
+                      onClick={() => handleFix(section.editRoute)}
+                      className="flex items-center gap-2 text-primary font-semibold text-lg hover:underline"
+                    >
+                      <Edit3 size={18} /> Edit
+                    </button>
+                  )}
                 </div>
 
-                {/* Actions (Only visible when active or already confirmed) */}
-                <AnimatePresence>
-                  {(isActive || isConfirmed) && (
-                    <motion.div 
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      className="flex gap-4 mt-8 pt-6 border-t border-slate-100 justify-end"
-                    >
-                      <LargeTouchButton 
-                        onClick={() => handleFix(section.editRoute)} 
-                        variant="secondary"
-                        className="py-4 px-8"
+                {/* Content */}
+                <div className="p-8 bg-surface flex flex-col gap-6">
+                  {section.content}
+
+                  {isActive && !isConfirmed && (
+                    <div className="pt-6 border-t-2 border-dashed border-hairline flex justify-end">
+                      <LargeTouchButton
+                        onClick={() => handleConfirm(section.id)}
+                        className="py-4 px-12 bg-primary hover:bg-primary-deep text-white border-none shadow-[var(--shadow-warm)]"
                       >
-                        <Edit3 size={24} className="mr-3" />
-                        <span className="text-xl">Fix This</span>
+                        <Check size={28} className="mr-3" />
+                        <span className="text-2xl font-semibold">Confirm</span>
                       </LargeTouchButton>
-                      
-                      {!isConfirmed && (
-                        <LargeTouchButton 
-                          onClick={() => handleConfirm(section.id)} 
-                          className="py-4 px-12 bg-[#00a8e8] hover:bg-[#0090c8] text-white border-none shadow-lg shadow-[#00a8e8]/20"
-                        >
-                          <Check size={28} className="mr-3" />
-                          <span className="text-2xl font-bold">This is Correct</span>
-                        </LargeTouchButton>
-                      )}
-                    </motion.div>
+                    </div>
                   )}
-                </AnimatePresence>
+                </div>
               </motion.div>
             );
           })}
         </div>
 
-        {/* Floating Submit Button */}
-        <AnimatePresence>
-          {allConfirmed && (
-            <motion.div 
-              initial={{ y: 100, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t-2 border-slate-200 p-8 flex justify-center z-50 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]"
-            >
-              <LargeTouchButton 
-                onClick={() => router.push('/done')}
-                className="w-[40rem] py-8 bg-[#00a8e8] hover:bg-[#0090c8] text-white border-none shadow-xl shadow-[#00a8e8]/30"
-              >
-                <span className="text-4xl font-bold">Confirm & Submit File</span>
-                <ArrowRight size={40} className="ml-4" />
-              </LargeTouchButton>
-            </motion.div>
-          )}
-        </AnimatePresence>
+      </motion.div>
 
-      </div>
+      {/* Floating Submit Button */}
+      <AnimatePresence>
+        {allConfirmed && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="fixed bottom-0 left-0 right-0 bg-surface/85 backdrop-blur-md border-t border-hairline p-8 flex justify-center z-50 shadow-[0_-10px_40px_-15px_rgba(70,55,40,0.15)]"
+          >
+            <LargeTouchButton
+              onClick={() => router.push('/done')}
+              className="w-[40rem] py-8 bg-primary hover:bg-primary-deep text-white border-none shadow-[var(--shadow-warm)]"
+            >
+              <span className="text-4xl font-bold">Confirm & Submit File</span>
+              <ArrowRight size={40} className="ml-4" />
+            </LargeTouchButton>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -52,7 +52,100 @@ export const interviewTree: Record<string, InterviewQuestion[]> = {
     }
   ],
   
-  // Generic fallback for other categories just for demo purposes
+  // Head / headache
+  head: [
+    {
+      id: 'head_onset',
+      text: 'When did the head problem start?',
+      options: [
+        { id: 'today', label: 'Today', icon: Clock, confirmationText: 'Okay, it started today.' },
+        { id: 'days', label: 'A few days ago', icon: Calendar, confirmationText: 'Got it, a few days ago.' },
+        { id: 'weeks', label: 'Weeks or more', icon: Calendar, confirmationText: 'Alright, for a while now.' },
+      ],
+    },
+    {
+      id: 'head_severity',
+      text: 'How strong is the discomfort?',
+      options: [
+        { id: 'mild', label: 'Mild', icon: ActivitySquare, confirmationText: 'Okay, mild.' },
+        { id: 'moderate', label: 'Moderate', icon: AlertTriangle, confirmationText: 'Got it, moderate.' },
+        { id: 'severe', label: 'Severe', icon: AlertOctagon, confirmationText: 'Understood, severe.' },
+      ],
+    },
+    {
+      id: 'head_assoc',
+      text: 'Any of these along with it?',
+      options: [
+        { id: 'nausea', label: 'Nausea / vomiting', icon: Frown, confirmationText: 'Noted, with nausea.' },
+        { id: 'vision', label: 'Blurred vision', icon: Zap, confirmationText: 'Noted, blurred vision.' },
+        { id: 'none', label: 'None of these', icon: HeartPulse, confirmationText: 'Okay, none of those.' },
+      ],
+    },
+  ],
+
+  // Stomach / abdomen
+  stomach: [
+    {
+      id: 'stomach_onset',
+      text: 'When did the stomach problem start?',
+      options: [
+        { id: 'today', label: 'Today', icon: Clock, confirmationText: 'Okay, today.' },
+        { id: 'days', label: 'A few days ago', icon: Calendar, confirmationText: 'Got it, a few days ago.' },
+        { id: 'weeks', label: 'Weeks or more', icon: Calendar, confirmationText: 'Alright, for a while.' },
+      ],
+    },
+    {
+      id: 'stomach_assoc',
+      text: 'Is any of this happening too?',
+      options: [
+        { id: 'vomiting', label: 'Vomiting', icon: Frown, confirmationText: 'Noted, with vomiting.' },
+        { id: 'loose', label: 'Loose motions', icon: Activity, confirmationText: 'Noted, loose motions.' },
+        { id: 'none', label: 'None of these', icon: HeartPulse, confirmationText: 'Okay, none of those.' },
+      ],
+    },
+    {
+      id: 'stomach_severity',
+      text: 'How bad is it right now?',
+      options: [
+        { id: 'mild', label: 'Mild', icon: ActivitySquare, confirmationText: 'Okay, mild.' },
+        { id: 'moderate', label: 'Moderate', icon: AlertTriangle, confirmationText: 'Got it, moderate.' },
+        { id: 'severe', label: 'Severe', icon: AlertOctagon, confirmationText: 'Understood, severe.' },
+      ],
+    },
+  ],
+
+  // Joints / arms / legs
+  joints: [
+    {
+      id: 'joints_onset',
+      text: 'When did the joint or limb problem start?',
+      options: [
+        { id: 'today', label: 'Today', icon: Clock, confirmationText: 'Okay, today.' },
+        { id: 'days', label: 'A few days ago', icon: Calendar, confirmationText: 'Got it, a few days ago.' },
+        { id: 'weeks', label: 'Weeks or more', icon: Calendar, confirmationText: 'Alright, for a while.' },
+      ],
+    },
+    {
+      id: 'joints_pattern',
+      text: 'When is it worst?',
+      options: [
+        { id: 'morning', label: 'In the morning', icon: Clock, confirmationText: 'Noted, worse in the morning.' },
+        { id: 'movement', label: 'When I move it', icon: Activity, confirmationText: 'Noted, worse on movement.' },
+        { id: 'always', label: 'All the time', icon: AlertTriangle, confirmationText: 'Okay, constant.' },
+      ],
+    },
+    {
+      id: 'joints_severity',
+      text: 'How bad is the pain?',
+      options: [
+        { id: 'mild', label: 'Mild', icon: ActivitySquare, confirmationText: 'Okay, mild.' },
+        { id: 'moderate', label: 'Moderate', icon: AlertTriangle, confirmationText: 'Got it, moderate.' },
+        { id: 'severe', label: 'Severe', icon: AlertOctagon, confirmationText: 'Understood, severe.' },
+      ],
+    },
+  ],
+
+  // Generic fallback for other categories (also used for "back")
   general: [
     {
       id: 'general_onset',
