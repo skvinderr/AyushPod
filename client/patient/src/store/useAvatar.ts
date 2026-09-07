@@ -12,15 +12,29 @@ export const useAvatar = create<AvatarStore>((set) => ({
   state: 'idle',
   setState: (state) => set({ state }),
   speak: (text, language = 'en') => {
-    // Basic SpeechSynthesis API implementation
-    // This can later be swapped out for Sarvam TTS API integration
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       // Cancel any ongoing speech
       window.speechSynthesis.cancel();
 
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = language === 'en' ? 'en-IN' : 'hi-IN'; // Default to Indian English or Hindi
       
+      // Language code determine karein
+      const targetLang = language === 'hi' ? 'hi-IN' : 'en-IN';
+      utterance.lang = targetLang;
+
+      // Available voices Fetch karein
+      const voices = window.speechSynthesis.getVoices();
+
+      // Selected language ke according exact Voice match find karein
+      const selectedVoice = voices.find(
+        (voice) => voice.lang.includes(targetLang) || voice.lang.replace('_', '-').includes(targetLang)
+      );
+
+      // Explicitly voice attach karein (agar browser mein Hindi voice mil jaye)
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+      }
+
       utterance.onstart = () => {
         set({ state: 'talking' });
       };
@@ -30,14 +44,23 @@ export const useAvatar = create<AvatarStore>((set) => ({
       };
       
       utterance.onerror = (e) => {
-        console.error('Speech synthesis error', e);
+        console.log('Speech synthesis error', e);
         set({ state: 'idle' });
       };
 
-      window.speechSynthesis.speak(utterance);
+      // Firefox/Chrome bug fix: Chrome mein kabhi-kabhi voices delay se load hoti hain
+      if (voices.length === 0) {
+        window.speechSynthesis.onvoiceschanged = () => {
+          const reloadedVoices = window.speechSynthesis.getVoices();
+          const match = reloadedVoices.find((v) => v.lang.includes(targetLang));
+          if (match) utterance.voice = match;
+          window.speechSynthesis.speak(utterance);
+        };
+      } else {
+        window.speechSynthesis.speak(utterance);
+      }
     } else {
       console.warn('SpeechSynthesis API not supported in this browser.');
-      // Simulate talking state for testing in unsupported environments
       set({ state: 'talking' });
       setTimeout(() => set({ state: 'idle' }), 3000);
     }
