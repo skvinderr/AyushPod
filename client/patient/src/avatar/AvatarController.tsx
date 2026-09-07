@@ -10,7 +10,7 @@ export function AvatarController() {
       <Canvas
         shadows
         dpr={[1, 2]}
-        camera={{ position: [0, 0.4, 4.2], fov: 42 }}
+        camera={{ position: [0, -0.1, 6.1], fov: 40 }}
         gl={{ alpha: true, antialias: true }}
       >
         <Avatar3D />

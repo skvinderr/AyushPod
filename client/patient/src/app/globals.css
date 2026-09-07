@@ -47,6 +47,15 @@
     rgba(226, 241, 238, 0.55) 55%,
     transparent 100%
   );
+
+  /* ---- v2 split-layout system ---- */
+  /* The left guide rail: a deep teal "consultation room" Aaya stands in. */
+  --rail-grad: linear-gradient(168deg, #3ab3a3 0%, #2a9d8f 38%, #1a6f65 100%);
+  --rail-line: rgba(255, 255, 255, 0.14);
+  --rail-glow: radial-gradient(560px 300px at 50% 4%, rgba(255, 255, 255, 0.22), transparent 62%);
+  /* Depth for content cards — a normal lift and a "chosen" teal pop */
+  --card-lift: 0 22px 55px -28px rgba(70, 55, 40, 0.32);
+  --card-pop: 0 26px 60px -22px rgba(31, 122, 110, 0.42);
 }
 
 @theme inline {
@@ -80,11 +89,26 @@ body {
 }
 .ambient::before {
   content: "";
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: var(--glow);
   pointer-events: none;
   z-index: 0;
+}
+
+/* The left guide rail where Aaya lives, full-height on every screen. */
+.rail {
+  background: var(--rail-grad);
+}
+/* Soft dotted texture + top glow so the teal room reads as a lit space,
+ * not a flat block. */
+.rail-texture {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(255, 255, 255, 0.12) 1px,
+    transparent 0
+  );
+  background-size: 22px 22px;
 }
 
 /* Calm motion for anyone who asks for it */

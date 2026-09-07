@@ -9,115 +9,107 @@ import { QrCode, CheckCircle2, ShieldCheck, ArrowRight, MapPin, Clock } from 'lu
 
 export default function DoneScreen() {
   const router = useRouter();
-  const { speak } = useAvatar();
+  const { speak, setState } = useAvatar();
   const { language, resetSession } = useSessionStore();
 
   const [dataCleared, setDataCleared] = useState(false);
-  const token = "A-" + Math.floor(100 + Math.random() * 900);
+  const token = 'A-' + Math.floor(100 + Math.random() * 900);
 
-  // Get current time
-  const [time, setTime] = useState("");
+  const [time, setTime] = useState('');
   useEffect(() => {
     setTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
   }, []);
 
-  const { setState } = useAvatar();
-
   useEffect(() => {
     setState('happy');
-    speak("Thank you. Your doctor will have this ready when you go in.", { language, gesture: 'wave', stage: true });
+    speak('Thank you. Your doctor will have this ready when you go in.', { language, gesture: 'wave', stage: true });
 
     const timer = setTimeout(() => {
       resetSession();
       setDataCleared(true);
-      speak("Your session data has been securely cleared.", language);
+      speak('Your session data has been securely cleared.', language);
     }, 8000);
 
     return () => clearTimeout(timer);
   }, [speak, language, resetSession, setState]);
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center pb-12">
-
+    <div className="relative h-full flex items-center justify-center">
       <motion.div
         initial={{ scale: 0.94, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ type: 'spring', stiffness: 180, damping: 22 }}
-        className="w-full max-w-2xl bg-surface rounded-[2.5rem] shadow-[var(--shadow-lift)] border border-hairline flex flex-col relative overflow-hidden"
+        className="w-full max-w-4xl bg-surface rounded-[2rem] shadow-[var(--card-lift)] border border-hairline flex overflow-hidden relative"
       >
-
-        {/* Success Header Area */}
-        <div className="flex flex-col items-center justify-center p-12 bg-primary-soft border-b-2 border-dashed border-hairline">
-          <div className="flex items-center gap-3 text-primary-deep font-bold text-2xl mb-5">
-            <CheckCircle2 size={32} />
+        {/* Left — confirmation + token */}
+        <div className="flex-1 p-10 flex flex-col justify-center">
+          <div className="flex items-center gap-2.5 text-primary-deep font-bold text-xl mb-4">
+            <CheckCircle2 size={28} />
             <span>Registration successful</span>
           </div>
 
-          <h1 className="text-6xl font-extrabold text-ink tracking-tight text-center leading-tight">
-            You're all set for<br/>your visit
-          </h1>
-        </div>
+          <h1 className="text-5xl font-extrabold text-ink tracking-tight leading-tight">You're all set for your visit</h1>
 
-        {/* Ticket Cutout Details (Left & Right semicircles to simulate ticket) */}
-        <div className="absolute left-[-20px] top-[260px] w-10 h-10 bg-bg rounded-full border-r-2 border-hairline" />
-        <div className="absolute right-[-20px] top-[260px] w-10 h-10 bg-bg rounded-full border-l-2 border-hairline" />
+          <div className="mt-8">
+            <span className="text-xl font-semibold text-muted">Your token number</span>
+            <div className="text-8xl font-extrabold text-primary-deep leading-none mt-1">{token}</div>
+          </div>
 
-        {/* Token Details Area */}
-        <div className="p-12 flex flex-col items-center">
-          <span className="text-xl font-semibold text-muted">Your token number</span>
-          <span className="text-8xl font-extrabold text-primary-deep mt-2 mb-8">{token}</span>
-
-          <div className="w-full flex justify-between items-center bg-surface-warm p-6 rounded-2xl border border-hairline mb-12">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-surface rounded-full shadow-sm text-muted">
-                <Clock size={24} />
+          <div className="mt-8 flex gap-4">
+            <div className="flex items-center gap-3 bg-surface-warm px-5 py-4 rounded-2xl border border-hairline">
+              <div className="p-2.5 bg-surface rounded-full text-primary">
+                <Clock size={22} />
               </div>
               <div className="flex flex-col">
-                <span className="text-xs font-semibold text-muted uppercase">Estimated Wait</span>
+                <span className="text-sm font-semibold text-muted">Estimated wait</span>
                 <span className="text-xl font-bold text-primary">~12 mins</span>
               </div>
             </div>
-
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-surface rounded-full shadow-sm text-muted">
-                <MapPin size={24} />
+            <div className="flex items-center gap-3 bg-surface-warm px-5 py-4 rounded-2xl border border-hairline">
+              <div className="p-2.5 bg-surface rounded-full text-primary">
+                <MapPin size={22} />
               </div>
               <div className="flex flex-col">
-                <span className="text-xs font-semibold text-muted uppercase">Go To</span>
+                <span className="text-sm font-semibold text-muted">Go to</span>
                 <span className="text-xl font-bold text-ink">Room 4, Level 2</span>
               </div>
             </div>
           </div>
+        </div>
 
-          <div className="flex flex-col items-center gap-4 text-center">
-            <QrCode size={120} className="text-ink" />
-            <span className="text-sm text-muted max-w-xs">Scan this QR code to track your status on your phone.</span>
+        {/* Perforated divider */}
+        <div className="relative w-px border-l-2 border-dashed border-hairline my-8">
+          <div className="absolute -top-8 -left-4 w-8 h-8 bg-bg rounded-full" />
+          <div className="absolute -bottom-8 -left-4 w-8 h-8 bg-bg rounded-full" />
+        </div>
+
+        {/* Right — QR stub */}
+        <div className="w-[300px] bg-primary-soft flex flex-col items-center justify-center gap-4 p-10 text-center">
+          <div className="bg-white p-4 rounded-2xl shadow-[var(--shadow-soft)]">
+            <QrCode size={128} className="text-ink" />
           </div>
-
+          <span className="text-lg font-semibold text-primary-deep">Scan to track your turn</span>
+          <span className="text-base text-muted max-w-[220px]">Follow your status on your own phone while you wait.</span>
         </div>
       </motion.div>
 
-      {/* Privacy Notice Banner */}
+      {/* Privacy notice */}
       <AnimatePresence>
         {dataCleared && (
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            initial={{ opacity: 0, y: 40, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            className="fixed bottom-12 bg-ink text-white px-8 py-6 rounded-full shadow-2xl flex items-center gap-6 z-50"
+            className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-ink text-white px-7 py-4 rounded-full shadow-2xl flex items-center gap-5 z-50"
           >
-            <ShieldCheck size={36} className="text-primary" />
-            <span className="text-2xl font-medium">Session data cleared for your privacy.</span>
-            <div className="w-px h-10 bg-white/25 mx-2" />
-            <button
-              onClick={() => router.push('/')}
-              className="flex items-center gap-2 text-primary-soft hover:text-white font-semibold text-xl transition-colors"
-            >
-              Start New Patient <ArrowRight size={24} />
+            <ShieldCheck size={30} className="text-primary" />
+            <span className="text-xl font-medium">Session data cleared for your privacy.</span>
+            <div className="w-px h-8 bg-white/25" />
+            <button onClick={() => router.push('/')} className="flex items-center gap-2 text-primary-soft hover:text-white font-semibold text-lg transition-colors">
+              Start new patient <ArrowRight size={22} />
             </button>
           </motion.div>
         )}
       </AnimatePresence>
-
     </div>
   );
 }

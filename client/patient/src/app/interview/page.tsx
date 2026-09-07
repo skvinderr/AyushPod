@@ -8,14 +8,13 @@ import { useSessionStore } from '../../store/useSessionStore';
 import { useVoiceInput } from '../../lib/useVoiceInput';
 import { interviewTree } from '../../lib/interviewTree';
 import { IconTile } from '../../components/IconTile';
-import { StepIndicator } from '../../components/StepIndicator';
 import { LargeTouchButton } from '../../components/LargeTouchButton';
-import { Mic, ArrowRight } from 'lucide-react';
+import { Mic, ArrowRight, ArrowLeft } from 'lucide-react';
 import { cn } from '../../components/LargeTouchButton';
 
 export default function InterviewScreen() {
   const router = useRouter();
-  const { speak, setState } = useAvatar();
+  const { speak } = useAvatar();
   const { language, chiefComplaint, setRedFlag, redFlag, updateHistoryAnswer } = useSessionStore();
   const { isListening, startListening } = useVoiceInput();
 
@@ -32,7 +31,6 @@ export default function InterviewScreen() {
   const currentQuestion = questions[currentIndex];
 
   useEffect(() => {
-    // Clear timeouts on unmount
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
@@ -41,7 +39,7 @@ export default function InterviewScreen() {
   // Speak the question on mount or index change
   useEffect(() => {
     if (isVoiceNarration) {
-      speak("Please describe your problem in detail.", { language, gesture: 'present', stage: true });
+      speak('Please describe your problem in detail.', { language, gesture: 'present', stage: true });
     } else if (!isConfirming && currentQuestion) {
       speak(currentQuestion.text, { language, gesture: 'present', stage: true });
     }
@@ -50,20 +48,17 @@ export default function InterviewScreen() {
   const handleOptionSelect = (optionId: string, confirmationText: string, triggersRedFlag?: boolean) => {
     setSelectedOption(optionId);
     setIsConfirming(true);
-    
-    // Save to store
+
     updateHistoryAnswer(currentQuestion.id, optionId);
     if (triggersRedFlag) setRedFlag(true);
 
-    // Avatar confirmation
     speak(confirmationText, language);
 
-    // Auto advance
     timeoutRef.current = setTimeout(() => {
       if (triggersRedFlag || redFlag) {
         router.push('/urgent');
       } else if (currentIndex < questions.length - 1) {
-        setCurrentIndex(prev => prev + 1);
+        setCurrentIndex((prev) => prev + 1);
         setIsConfirming(false);
         setSelectedOption(null);
       } else {
@@ -73,14 +68,18 @@ export default function InterviewScreen() {
   };
 
   const handleVoiceNarrationComplete = () => {
-    speak("Thank you. I have recorded your symptoms.", language);
+    speak('Thank you. I have recorded your symptoms.', language);
     router.push('/scan');
   };
 
+  // ---- Voice narration path ----
   if (isVoiceNarration) {
     return (
-      <div className="absolute inset-0 bg-bg flex flex-col items-center justify-center p-12 overflow-hidden">
-        <h1 className="text-5xl font-bold text-ink text-center mb-12">Describe your symptoms</h1>
+      <div className="h-full flex flex-col items-center justify-center gap-10">
+        <div className="text-center">
+          <h1 className="text-5xl font-extrabold text-ink tracking-tight">Tell me what's wrong</h1>
+          <p className="text-2xl text-muted mt-2">Speak in your own words — take your time.</p>
+        </div>
 
         <motion.button
           initial={{ scale: 0.9 }}
@@ -88,131 +87,100 @@ export default function InterviewScreen() {
           whileTap={{ scale: 0.95 }}
           onClick={startListening}
           className={cn(
-            "w-96 h-96 rounded-full flex flex-col items-center justify-center gap-6 shadow-[var(--shadow-warm)] transition-all duration-300",
-            isListening ? "bg-primary text-white animate-pulse border-8 border-primary/40" : "bg-surface border-8 border-hairline text-ink"
+            'w-80 h-80 rounded-full flex flex-col items-center justify-center gap-5 shadow-[var(--card-pop)] transition-all duration-300',
+            isListening ? 'bg-primary text-white animate-pulse border-8 border-primary/30' : 'bg-surface border-8 border-hairline text-primary',
           )}
         >
-          <Mic size={100} />
-          <span className="text-3xl font-bold">{isListening ? "Listening..." : "Tap to Speak"}</span>
+          <Mic size={96} />
+          <span className="text-3xl font-bold">{isListening ? 'Listening…' : 'Tap to speak'}</span>
         </motion.button>
 
-        <LargeTouchButton 
-          onClick={handleVoiceNarrationComplete}
-          className="mt-16 w-96 py-6"
-        >
-          <span className="text-3xl">Done</span>
-          <ArrowRight size={32} />
+        <LargeTouchButton onClick={handleVoiceNarrationComplete} className="w-80 py-5">
+          <span className="text-2xl">Done</span>
+          <ArrowRight size={30} className="ml-2" />
         </LargeTouchButton>
       </div>
     );
   }
 
-  // Structured Interview Flow
+  // ---- Structured interview path ----
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center pb-12">
-      
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="w-full max-w-5xl bg-surface rounded-[2.5rem] shadow-[var(--shadow-lift)] border border-hairline p-12 flex flex-col min-h-[70vh]"
-      >
-        <StepIndicator currentStep={3} totalSteps={4} title="Medical History" />
-
-        {/* Progress Bar (Sub-steps) */}
-        <div className="flex gap-2 w-full max-w-md mx-auto mb-8">
-          {questions.map((_, idx) => (
+    <div className="h-full flex flex-col">
+      {/* per-question progress dots */}
+      <div className="flex items-center gap-2.5 pb-2">
+        {questions.map((_, idx) => (
           <div
             key={idx}
             className={cn(
-              "w-4 h-4 rounded-full transition-colors",
-              idx === currentIndex ? "bg-primary" : idx < currentIndex ? "bg-primary/40" : "bg-hairline"
+              'h-2.5 rounded-full transition-all duration-300',
+              idx === currentIndex ? 'w-10 bg-primary' : idx < currentIndex ? 'w-2.5 bg-primary/50' : 'w-2.5 bg-hairline',
             )}
           />
-          ))}
-        </div>
+        ))}
+        <span className="ml-2 text-lg font-semibold text-muted">
+          Question {currentIndex + 1} of {questions.length}
+        </span>
+      </div>
 
-      <div className="flex-1 flex flex-col items-center max-w-5xl mx-auto w-full relative">
+      <div className="flex-1 min-h-0 flex flex-col justify-center">
         <AnimatePresence mode="wait">
-          
           <motion.div
             key={currentIndex}
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -50 }}
-            className="w-full flex flex-col items-center gap-12"
+            className="w-full flex flex-col items-center gap-8"
           >
-            {/* Question Text */}
-            <h1 className="text-5xl font-bold text-ink text-center leading-tight">
+            <h1 className="text-5xl font-extrabold text-ink text-center leading-tight tracking-tight max-w-4xl">
               {currentQuestion.text}
             </h1>
 
-            {/* Answer Options Grid */}
-            <div className={cn(
-              "grid gap-8 w-full mt-8",
-              currentQuestion.options.length <= 4 ? "grid-cols-2" : "grid-cols-3"
-            )}>
-              {currentQuestion.options.map(opt => (
+            <div className={cn('grid gap-6 w-full', currentQuestion.options.length <= 4 ? 'grid-cols-2' : 'grid-cols-3')}>
+              {currentQuestion.options.map((opt) => (
                 <IconTile
                   key={opt.id}
                   icon={opt.icon}
                   label={opt.label}
                   selected={selectedOption === opt.id}
                   onClick={() => !isConfirming && handleOptionSelect(opt.id, opt.confirmationText, opt.triggersRedFlag)}
-                  className={cn(
-                    "h-64",
-                    isConfirming && selectedOption !== opt.id ? "opacity-50 grayscale" : ""
-                  )}
+                  className={cn('h-52', isConfirming && selectedOption !== opt.id ? 'opacity-50 grayscale' : '')}
                   disabled={isConfirming}
                 />
               ))}
             </div>
 
-            {/* Voice Fallback Button */}
-            {!isConfirming && (
+            {!isConfirming ? (
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={startListening}
                 className={cn(
-                  "mt-8 flex items-center gap-6 px-10 py-6 rounded-full bg-surface shadow-[var(--shadow-soft)] border-2 border-hairline",
-                  isListening ? "ring-4 ring-primary/30 border-primary" : ""
+                  'flex items-center gap-4 px-8 py-4 rounded-full bg-surface shadow-[var(--shadow-soft)] border-2 border-hairline',
+                  isListening ? 'ring-4 ring-primary/30 border-primary' : '',
                 )}
               >
-                <div className={cn(
-                  "p-4 rounded-full text-primary",
-                  isListening ? "bg-primary text-white animate-pulse" : "bg-primary-soft"
-                )}>
-                  <Mic size={32} />
+                <div className={cn('p-3 rounded-full text-primary', isListening ? 'bg-primary text-white animate-pulse' : 'bg-primary-soft')}>
+                  <Mic size={28} />
                 </div>
-                <span className="text-2xl font-semibold text-ink">
-                  {isListening ? "Listening..." : "Tap to answer with your voice"}
-                </span>
+                <span className="text-xl font-semibold text-ink">{isListening ? 'Listening…' : 'Answer with your voice'}</span>
               </motion.button>
-            )}
-
-            {/* Confirmation Overlay Indicator */}
-            {isConfirming && (
+            ) : (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mt-8 px-8 py-4 bg-primary-soft text-primary-deep rounded-full text-2xl font-medium animate-pulse"
+                className="px-8 py-3.5 bg-primary-soft text-primary-deep rounded-full text-xl font-semibold animate-pulse"
               >
-                Recording your answer...
+                Saving your answer…
               </motion.div>
             )}
           </motion.div>
-
         </AnimatePresence>
       </div>
 
-      <div className="mt-8 flex gap-6 w-full pt-6 border-t border-hairline">
-        <LargeTouchButton variant="secondary" onClick={() => router.push('/complaint')} className="w-48 py-6">
-          Back
+      <div className="pt-3">
+        <LargeTouchButton variant="secondary" onClick={() => router.push('/complaint')} className="w-44 py-4">
+          <ArrowLeft size={24} className="mr-2" /> Back
         </LargeTouchButton>
       </div>
-      
-      </motion.div>
     </div>
   );
 }

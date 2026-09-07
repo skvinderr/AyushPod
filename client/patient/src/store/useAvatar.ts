@@ -80,9 +80,9 @@ export const useAvatar = create<AvatarStore>((set) => ({
     };
     const onSpeakEnd = () => {
       stopMouth(set);
-      // Retreat to the corner after guiding; keep the resting state calm.
-      set({ state: 'idle' });
-      if (wantsStage) set({ presence: 'corner', gesture: 'none', caption: '' });
+      // Retreat to the corner after guiding; the caption is only ever shown
+      // while she is actively speaking, so always clear it here.
+      set({ state: 'idle', caption: '', gesture: 'none', presence: 'corner' });
     };
 
     // Browser SpeechSynthesis. Swappable for Sarvam TTS later.
