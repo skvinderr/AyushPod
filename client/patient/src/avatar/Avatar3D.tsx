@@ -335,8 +335,10 @@ function Character() {
         </mesh>
 
         {/* ---- Hair ---- */}
-        <mesh position={[0, 0.12, -0.05]} scale={[1.08, 1.05, 1.1]}>
-          <sphereGeometry args={[0.6, 40, 40, 0, Math.PI * 2, 0, Math.PI / 1.55]} />
+        {/* Crown cap: sits back and high so it FRAMES the face (a centre-parted
+            hairline) instead of overhanging the forehead and shadowing it. */}
+        <mesh position={[0, 0.17, -0.1]} scale={[1.06, 1.0, 0.98]}>
+          <sphereGeometry args={[0.6, 40, 40, 0, Math.PI * 2, 0, Math.PI / 1.7]} />
           <meshStandardMaterial color={HAIR} roughness={0.62} metalness={0.05} />
         </mesh>
         <mesh position={[0, 0.4, 0.16]} rotation={[0.5, 0, 0]}>
@@ -461,16 +463,19 @@ function Character() {
 export function Avatar3D() {
   return (
     <>
-      {/* soft ambient so nothing is fully black */}
-      <hemisphereLight args={['#fff6ec', '#d8cfc0', 0.75]} />
+      {/* soft warm ambient so her face never falls to black */}
+      <hemisphereLight args={['#fff6ec', '#d8cfc0', 0.95]} />
       {/* key light */}
-      <directionalLight position={[3, 5, 4]} intensity={1.15} castShadow shadow-mapSize={[1024, 1024]} />
+      <directionalLight position={[3, 5, 4]} intensity={1.05} castShadow shadow-mapSize={[1024, 1024]} />
       {/* warm fill from the other side */}
-      <directionalLight position={[-4, 2, -1]} intensity={0.42} color="#ffe6c9" />
+      <directionalLight position={[-4, 2, 1]} intensity={0.5} color="#ffe6c9" />
       {/* cool rim from behind to separate her from the teal room */}
       <directionalLight position={[0, 3, -4]} intensity={0.55} color="#bfe9ff" />
-      {/* small front light for eye catchlights */}
-      <pointLight position={[0, 1.4, 3]} intensity={0.38} color="#eafaf6" />
+      {/* dedicated warm FACE fill — straight-on, keeps her features bright and
+          legible at kiosk distance (a face in shadow reads as a silhouette). */}
+      <directionalLight position={[0, 1.7, 6]} intensity={0.75} color="#fff2e0" />
+      {/* front catchlight for the eyes */}
+      <pointLight position={[0, 1.7, 3]} intensity={0.5} color="#fff6ee" />
       <Character />
       <ContactShadows position={[0, -1.15, 0]} opacity={0.25} scale={4.5} blur={2.8} far={3} />
     </>
