@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useSessionStore } from '../../store/useSessionStore';
 import { useAvatar } from '../../store/useAvatar';
+import { useTranslation } from '../../lib/i18n/TranslationContext';
 import { LargeTouchButton } from '../../components/LargeTouchButton';
 import { LargeNumpad } from '../../components/LargeNumpad';
 import { ToggleSwitch } from '../../components/ToggleSwitch';
@@ -30,6 +31,7 @@ export default function ConsentScreen() {
   const router = useRouter();
   const { speak } = useAvatar();
   const { language, setConsentStatus, updatePatientInfo } = useSessionStore();
+  const { t } = useTranslation();
   
   const [step, setStep] = useState<Step>('identity');
   const [idType, setIdType] = useState<IdType>(null);
@@ -125,11 +127,11 @@ export default function ConsentScreen() {
             <ShieldCheck className="w-6 h-6 sm:w-7 sm:h-7" />
           </div>
           <div>
-            <span className="text-[10px] sm:text-xs font-bold text-[#008080] uppercase tracking-wider block">AyushPod Kiosk</span>
+            <span className="text-[10px] sm:text-xs font-bold text-[#008080] uppercase tracking-wider block">{t('AyushPod Kiosk')}</span>
             <h2 className="text-sm sm:text-base md:text-lg font-black text-slate-800">
-              {step === 'identity' && "Step 1: Patient Verification"}
-              {step === 'details' && "Step 2: Enter Details"}
-              {step === 'consent' && "Step 3: Permissions & Consent"}
+              {step === 'identity' && t("Step 1: Patient Verification")}
+              {step === 'details' && t("Step 2: Enter Details")}
+              {step === 'consent' && t("Step 3: Permissions & Consent")}
             </h2>
           </div>
         </div>
@@ -177,10 +179,10 @@ export default function ConsentScreen() {
             >
               <div className="text-center mb-6 sm:mb-8">
                 <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-[#008080] font-bold text-xs px-3 py-1 rounded-full border border-emerald-200 mb-2">
-                  <Sparkles className="w-3.5 h-3.5" /> Easy Verification
+                  <Sparkles className="w-3.5 h-3.5" /> {t('Easy Verification')}
                 </span>
-                <h1 className="text-2xl sm:text-4xl font-black text-slate-800">How would you like to register?</h1>
-                <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">Tap one of the large buttons below to select</p>
+                <h1 className="text-2xl sm:text-4xl font-black text-slate-800">{t('How would you like to register?')}</h1>
+                <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">{t('Tap one of the large buttons below to select')}</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 w-full max-w-4xl">
@@ -193,8 +195,8 @@ export default function ConsentScreen() {
                   <div className="p-3.5 bg-teal-100 text-[#008080] rounded-2xl mb-3">
                     <Fingerprint className="w-8 h-8 sm:w-10 sm:h-10" />
                   </div>
-                  <span className="text-base sm:text-xl font-bold text-slate-800">ABHA Health ID</span>
-                  <span className="text-[11px] sm:text-xs text-slate-400 font-medium mt-0.5">Government Digital ID</span>
+                  <span className="text-base sm:text-xl font-bold text-slate-800">{t('ABHA Health ID')}</span>
+                  <span className="text-[11px] sm:text-xs text-slate-400 font-medium mt-0.5">{t('Government Digital ID')}</span>
                 </motion.button>
 
                 <motion.button
@@ -206,8 +208,8 @@ export default function ConsentScreen() {
                   <div className="p-3.5 bg-teal-100 text-[#008080] rounded-2xl mb-3">
                     <CreditCard className="w-8 h-8 sm:w-10 sm:h-10" />
                   </div>
-                  <span className="text-base sm:text-xl font-bold text-slate-800">Identity Card</span>
-                  <span className="text-[11px] sm:text-xs text-slate-400 font-medium mt-0.5">National ID Number</span>
+                  <span className="text-base sm:text-xl font-bold text-slate-800">{t('Identity Card')}</span>
+                  <span className="text-[11px] sm:text-xs text-slate-400 font-medium mt-0.5">{t('National ID Number')}</span>
                 </motion.button>
 
                 <motion.button
@@ -219,8 +221,8 @@ export default function ConsentScreen() {
                   <div className="p-3.5 bg-teal-100 text-[#008080] rounded-2xl mb-3">
                     <UserPlus className="w-8 h-8 sm:w-10 sm:h-10" />
                   </div>
-                  <span className="text-base sm:text-xl font-bold text-slate-800">New Patient</span>
-                  <span className="text-[11px] sm:text-xs text-slate-400 font-medium mt-0.5">Manual Entry / Walk-in</span>
+                  <span className="text-base sm:text-xl font-bold text-slate-800">{t('New Patient')}</span>
+                  <span className="text-[11px] sm:text-xs text-slate-400 font-medium mt-0.5">{t('Manual Entry / Walk-in')}</span>
                 </motion.button>
               </div>
             </motion.div>
@@ -238,10 +240,10 @@ export default function ConsentScreen() {
               className="bg-white/95 backdrop-blur-md rounded-3xl p-5 sm:p-8 shadow-md border border-slate-200 flex flex-col items-center max-w-lg mx-auto w-full"
             >
               <h1 className="text-xl sm:text-3xl font-black text-slate-800 text-center">
-                {idType === 'new' ? 'Enter your Age' : `Enter your ${idType === 'abha' ? 'ABHA ID' : 'ID'} Number`}
+                {idType === 'new' ? t('Enter your Age') : t(`Enter your ${idType === 'abha' ? 'ABHA ID' : 'ID'} Number`)}
               </h1>
               <p className="text-slate-500 font-medium text-xs sm:text-sm mb-4 text-center">
-                {idType === 'new' ? 'Enter age in years' : `Enter digits (${inputValue.length}/${getMaxInputLength()})`}
+                {idType === 'new' ? t('Enter age in years') : t(`Enter digits (${inputValue.length}/${getMaxInputLength()})`)}
               </p>
 
               {/* READOUT BOX */}
@@ -267,7 +269,7 @@ export default function ConsentScreen() {
                   className="flex-1 py-3.5 sm:py-4 rounded-2xl border-2 border-slate-200 font-bold text-slate-600 hover:bg-slate-100 active:bg-slate-200 flex items-center justify-center gap-2 transition-all text-sm sm:text-base"
                 >
                   <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span>Back</span>
+                  <span>{t('Back')}</span>
                 </button>
 
                 <LargeTouchButton 
@@ -275,7 +277,7 @@ export default function ConsentScreen() {
                   className="flex-[2] bg-[#008080] hover:bg-[#006666] text-white py-3.5 sm:py-4 rounded-2xl font-black text-base sm:text-lg flex items-center justify-center gap-2 shadow-md disabled:opacity-40"
                   disabled={isContinueDisabled()}
                 >
-                  <span>Continue</span>
+                  <span>{t('Continue')}</span>
                   <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                 </LargeTouchButton>
               </div>
@@ -294,35 +296,35 @@ export default function ConsentScreen() {
               className="bg-white/95 backdrop-blur-md rounded-3xl p-5 sm:p-8 shadow-md border border-slate-200 flex flex-col max-w-3xl mx-auto w-full"
             >
               <div className="text-center mb-4 sm:mb-6">
-                <h1 className="text-2xl sm:text-3xl font-black text-slate-800">Consent & Privacy Permissions</h1>
+                <h1 className="text-2xl sm:text-3xl font-black text-slate-800">{t('Consent & Privacy Permissions')}</h1>
                 <p className="text-slate-500 font-medium text-xs sm:text-sm mt-1">
-                  Please enable all permissions to proceed with your AI checkup
+                  {t('Please enable all permissions to proceed with your AI checkup')}
                 </p>
               </div>
 
               <div className="flex flex-col gap-3 sm:gap-4 w-full mb-6">
                 <ToggleSwitch 
                   icon={Mic}
-                  label="Record voice for automatic doctor notes"
+                  label={t("Record voice for automatic doctor notes")}
                   checked={consentVoice}
                   onChange={(val) => { setConsentVoice(val); setInteractedVoice(true); }}
-                  onExplain={() => speak("We record your voice during consultation to draft your clinical report.", language)}
+                  onExplain={() => speak(t("We record your voice during consultation to draft your clinical report."), language)}
                 />
 
                 <ToggleSwitch 
                   icon={FileText}
-                  label="Scan and store old prescriptions & reports"
+                  label={t("Scan and store old prescriptions & reports")}
                   checked={consentDocs}
                   onChange={(val) => { setConsentDocs(val); setInteractedDocs(true); }}
-                  onExplain={() => speak("Your documents will be stored securely for your assigned doctor to review.", language)}
+                  onExplain={() => speak(t("Your documents will be stored securely for your assigned doctor to review."), language)}
                 />
 
                 <ToggleSwitch 
                   icon={Share2}
-                  label="Share health profile with hospital doctors"
+                  label={t("Share health profile with hospital doctors")}
                   checked={consentShare}
                   onChange={(val) => { setConsentShare(val); setInteractedShare(true); }}
-                  onExplain={() => speak("Data is strictly shared only with verified medical staff.", language)}
+                  onExplain={() => speak(t("Data is strictly shared only with verified medical staff."), language)}
                 />
               </div>
 
@@ -334,7 +336,7 @@ export default function ConsentScreen() {
                   disabled={!canContinue}
                 >
                   <Lock className="w-5 h-5 sm:w-6 sm:h-6" />
-                  <span>I Understand and Agree</span>
+                  <span>{t('I Understand and Agree')}</span>
                   <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
                 </LargeTouchButton>
 
@@ -344,7 +346,7 @@ export default function ConsentScreen() {
                     animate={{ opacity: 1 }} 
                     className="text-[11px] sm:text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full text-center"
                   >
-                    Please toggle all 3 options above to continue
+                    {t('Please toggle all 3 options above to continue')}
                   </motion.p>
                 )}
               </div>

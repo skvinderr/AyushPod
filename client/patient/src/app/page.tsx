@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../components/LargeTouchButton';
+import { useTranslation } from '../lib/i18n/TranslationContext';
 
 // Updated Language Data with Greetings & Phonetics/English names
 const LANGUAGES = [
@@ -34,6 +35,7 @@ export default function WelcomeScreen() {
   const { speak } = useAvatar();
   const { language, setLanguage } = useSessionStore();
   const { isListening, startListening } = useVoiceInput();
+  const { t } = useTranslation();
   
   const [hasSelected, setHasSelected] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout>(null);
@@ -84,7 +86,7 @@ export default function WelcomeScreen() {
           </div>
           <div>
             <h1 className="text-3xl font-extrabold text-[#0a3636] tracking-tight">AyushPod</h1>
-            <p className="text-xs font-semibold text-[#008080] tracking-widest uppercase">Smart Health Kiosk</p>
+            <p className="text-xs font-semibold text-[#008080] tracking-widest uppercase">{t('Smart Health Kiosk')}</p>
           </div>
         </div>
 
@@ -95,8 +97,8 @@ export default function WelcomeScreen() {
         >
           <PhoneCall size={20} className="animate-bounce" />
           <div className="text-left leading-tight">
-            <span className="block font-bold text-sm">Call Nurse</span>
-            <span className="block text-[10px] opacity-80">Ayuda / सहायता</span>
+            <span className="block font-bold text-sm">{t('Call Nurse')}</span>
+            <span className="block text-[10px] opacity-80">{t('Ayuda / सहायता')}</span>
           </div>
         </motion.button>
       </motion.header>
@@ -201,14 +203,14 @@ export default function WelcomeScreen() {
             >
               <div className="flex-1 bg-white border border-emerald-200 py-4 px-6 rounded-2xl text-center shadow-sm">
                 <span className="text-sm font-semibold text-slate-600 animate-pulse">
-                  Continuing automatically in 3 seconds...
+                  {t('Continuing automatically in 3 seconds...')}
                 </span>
               </div>
               <LargeTouchButton 
                 onClick={handleNextClick}
                 className="bg-[#008080] text-white py-4 px-8 rounded-2xl shadow-lg flex items-center gap-3 font-bold text-xl hover:bg-[#006666]"
               >
-                <span>Next</span>
+                <span>{t('Next')}</span>
                 <ArrowRight size={24} />
               </LargeTouchButton>
             </motion.div>
@@ -218,7 +220,7 @@ export default function WelcomeScreen() {
         {/* NURSE ASSIST FOOTER BANNER */}
         <div className="bg-white/80 backdrop-blur-sm border border-slate-200/80 rounded-xl py-2.5 px-4 flex items-center justify-center gap-2 text-xs font-semibold text-slate-600 text-center shadow-sm">
           <HeartPulse size={16} className="text-red-500" />
-          <span>Need help? A nurse or assistant is available right here to assist you.</span>
+          <span>{t('Need help? A nurse or assistant is available right here to assist you.')}</span>
         </div>
       </div>
 

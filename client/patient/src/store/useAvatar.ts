@@ -8,61 +8,108 @@ interface AvatarStore {
   speak: (text: string, language?: string) => void;
 }
 
+let currentAudio: HTMLAudioElement | null = null;
+let currentRequestId = 0; // Used to cancel stale requests and fix double-voice
+
+// Fix for autoplay policy: if audio can't play automatically (before user gesture),
+// queue it and play on the very next user interaction.
+let pendingAudio: HTMLAudioElement | null = null;
+
+function setupAutoplayUnlock() {
+  if (typeof window === 'undefined') return;
+  const unlock = () => {
+    if (pendingAudio) {
+      pendingAudio.play().catch(() => {});
+      pendingAudio = null;
+    }
+    window.removeEventListener('click', unlock);
+    window.removeEventListener('touchstart', unlock);
+    window.removeEventListener('keydown', unlock);
+  };
+  window.addEventListener('click', unlock, { once: true });
+  window.addEventListener('touchstart', unlock, { once: true });
+  window.addEventListener('keydown', unlock, { once: true });
+}
+
 export const useAvatar = create<AvatarStore>((set) => ({
   state: 'idle',
   setState: (state) => set({ state }),
-  speak: (text, language = 'en') => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      // Cancel any ongoing speech
-      window.speechSynthesis.cancel();
+  speak: async (text, language = 'en') => {
+    if (typeof window === 'undefined') return;
 
-      const utterance = new SpeechSynthesisUtterance(text);
-      
-      // Language code determine karein
-      const targetLang = language === 'hi' ? 'hi-IN' : 'en-IN';
-      utterance.lang = targetLang;
+    // Increment request ID — any older in-flight request will see a mismatch and abort
+    const myRequestId = ++currentRequestId;
 
-      // Available voices Fetch karein
-      const voices = window.speechSynthesis.getVoices();
+    // Stop currently playing audio immediately
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.src = '';
+      currentAudio = null;
+    }
+    pendingAudio = null;
 
-      // Selected language ke according exact Voice match find karein
-      const selectedVoice = voices.find(
-        (voice) => voice.lang.includes(targetLang) || voice.lang.replace('_', '-').includes(targetLang)
-      );
-
-      // Explicitly voice attach karein (agar browser mein Hindi voice mil jaye)
-      if (selectedVoice) {
-        utterance.voice = selectedVoice;
-      }
-
-      utterance.onstart = () => {
-        set({ state: 'talking' });
-      };
-      
-      utterance.onend = () => {
-        set({ state: 'idle' });
-      };
-      
-      utterance.onerror = (e) => {
-        console.log('Speech synthesis error', e);
-        set({ state: 'idle' });
-      };
-
-      // Firefox/Chrome bug fix: Chrome mein kabhi-kabhi voices delay se load hoti hain
-      if (voices.length === 0) {
-        window.speechSynthesis.onvoiceschanged = () => {
-          const reloadedVoices = window.speechSynthesis.getVoices();
-          const match = reloadedVoices.find((v) => v.lang.includes(targetLang));
-          if (match) utterance.voice = match;
-          window.speechSynthesis.speak(utterance);
-        };
-      } else {
-        window.speechSynthesis.speak(utterance);
-      }
-    } else {
-      console.warn('SpeechSynthesis API not supported in this browser.');
+    try {
       set({ state: 'talking' });
-      setTimeout(() => set({ state: 'idle' }), 3000);
+
+      // Normalize to BCP-47: 'en' -> 'en-IN', 'hi-IN' stays 'hi-IN'
+      const targetLang = language.includes('-') ? language : `${language}-IN`;
+
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, language_code: targetLang }),
+      });
+
+      // If a newer speak() call came in while we were fetching, discard this result
+      if (myRequestId !== currentRequestId) return;
+
+      if (!response.ok) {
+        console.log('TTS fetch failed:', response.status);
+        set({ state: 'idle' });
+        return;
+      }
+
+      const data = await response.json();
+
+      // Guard again after awaiting JSON parse
+      if (myRequestId !== currentRequestId) return;
+
+      // Sarvam bulbul:v3 returns `audios` array with base64 WAV strings
+      const base64Audio = data?.audios?.[0];
+
+      if (base64Audio) {
+        const audio = new Audio(`data:audio/wav;base64,${base64Audio}`);
+        currentAudio = audio;
+
+        audio.onended = () => {
+          if (myRequestId === currentRequestId) set({ state: 'idle' });
+        };
+        audio.onerror = () => {
+          if (myRequestId === currentRequestId) set({ state: 'idle' });
+        };
+
+        try {
+          await audio.play();
+        } catch (autoplayError: any) {
+          // Browser blocked autoplay — queue it for next user interaction
+          if (autoplayError?.name === 'NotAllowedError') {
+            console.log('Autoplay blocked — audio will play on next user interaction');
+            pendingAudio = audio;
+            setupAutoplayUnlock();
+          } else {
+            set({ state: 'idle' });
+          }
+        }
+      } else {
+        console.warn('No audio data received from Sarvam TTS API');
+        set({ state: 'idle' });
+      }
+
+    } catch (error) {
+      if (myRequestId === currentRequestId) {
+        console.error('Error during TTS playback:', error);
+        set({ state: 'idle' });
+      }
     }
   },
 }));
