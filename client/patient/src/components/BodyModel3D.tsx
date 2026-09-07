@@ -33,6 +33,11 @@ export const BODY_ZONES: BodyZone[] = [
 
 const SKIN = '#e8b48c';
 const SKIN_DEEP = '#d59b73';
+const HAIR = '#2e2622';     // soft near-black hair
+const SHIRT = '#b8c2cf';    // calm heather top (neutral, gender-agnostic)
+const PANTS = '#596372';    // muted slate trousers
+const SHOE = '#3a4450';
+const EYE = '#2c2a28';
 
 function TapZone({
   zone,
@@ -94,75 +99,106 @@ function TapZone({
 }
 
 function HumanFigure() {
-  const skin = <meshStandardMaterial color={SKIN} roughness={0.62} metalness={0.02} />;
+  const skin = <meshStandardMaterial color={SKIN} roughness={0.6} metalness={0.02} />;
+  const shirt = <meshStandardMaterial color={SHIRT} roughness={0.85} metalness={0} />;
+  const pants = <meshStandardMaterial color={PANTS} roughness={0.85} metalness={0} />;
 
   return (
     <group position={[0, -0.1, 0]}>
-      {/* head */}
-      <mesh position={[0, 1.42, 0]} castShadow>
+      {/* ---- head ---- */}
+      <mesh position={[0, 1.44, 0]} castShadow>
         <sphereGeometry args={[0.28, 40, 40]} />
         {skin}
       </mesh>
+      {/* hair — a soft cap over the scalp/back, open at the face */}
+      <mesh position={[0, 1.47, -0.02]} castShadow>
+        <sphereGeometry args={[0.3, 36, 36, 0, Math.PI * 2, 0, Math.PI / 1.7]} />
+        <meshStandardMaterial color={HAIR} roughness={0.75} />
+      </mesh>
+      {/* eyes — small, calm, clearly a person (non-cartoonish) */}
+      <mesh position={[-0.1, 1.45, 0.25]}>
+        <sphereGeometry args={[0.032, 16, 16]} />
+        <meshStandardMaterial color={EYE} roughness={0.3} />
+      </mesh>
+      <mesh position={[0.1, 1.45, 0.25]}>
+        <sphereGeometry args={[0.032, 16, 16]} />
+        <meshStandardMaterial color={EYE} roughness={0.3} />
+      </mesh>
+
       {/* neck */}
-      <mesh position={[0, 1.12, 0]} castShadow>
-        <cylinderGeometry args={[0.11, 0.13, 0.22, 24]} />
+      <mesh position={[0, 1.14, 0]} castShadow>
+        <cylinderGeometry args={[0.1, 0.12, 0.2, 24]} />
         {skin}
       </mesh>
-      {/* torso (chest + abdomen as one smooth capsule) */}
+
+      {/* ---- torso: a soft top ---- */}
       <mesh position={[0, 0.5, 0]} castShadow>
-        <capsuleGeometry args={[0.34, 0.62, 16, 32]} />
-        <meshStandardMaterial color={SKIN} roughness={0.62} />
+        <capsuleGeometry args={[0.36, 0.62, 16, 32]} />
+        {shirt}
       </mesh>
-      {/* pelvis */}
-      <mesh position={[0, -0.12, 0]} castShadow>
-        <capsuleGeometry args={[0.3, 0.18, 12, 24]} />
-        {skin}
-      </mesh>
-
-      {/* shoulders */}
-      <mesh position={[-0.38, 0.78, 0]} castShadow>
-        <sphereGeometry args={[0.16, 20, 20]} />
-        {skin}
-      </mesh>
-      <mesh position={[0.38, 0.78, 0]} castShadow>
-        <sphereGeometry args={[0.16, 20, 20]} />
-        {skin}
+      {/* hem where the top meets the trousers */}
+      <mesh position={[0, 0.06, 0]} castShadow>
+        <cylinderGeometry args={[0.34, 0.32, 0.14, 32]} />
+        {shirt}
       </mesh>
 
-      {/* arms */}
+      {/* pelvis / trousers top */}
+      <mesh position={[0, -0.14, 0]} castShadow>
+        <capsuleGeometry args={[0.31, 0.18, 12, 24]} />
+        {pants}
+      </mesh>
+
+      {/* shoulders (top) */}
+      <mesh position={[-0.39, 0.78, 0]} castShadow>
+        <sphereGeometry args={[0.17, 20, 20]} />
+        {shirt}
+      </mesh>
+      <mesh position={[0.39, 0.78, 0]} castShadow>
+        <sphereGeometry args={[0.17, 20, 20]} />
+        {shirt}
+      </mesh>
+
+      {/* ---- arms: short sleeve, then skin ---- */}
       {[-1, 1].map((side) => (
         <group key={side}>
-          <mesh position={[side * 0.5, 0.4, 0]} rotation={[0, 0, side * 0.12]} castShadow>
-            <capsuleGeometry args={[0.1, 0.55, 12, 20]} />
+          {/* short sleeve over the upper arm */}
+          <mesh position={[side * 0.51, 0.56, 0]} rotation={[0, 0, side * 0.12]} castShadow>
+            <capsuleGeometry args={[0.135, 0.16, 12, 20]} />
+            {shirt}
+          </mesh>
+          {/* upper arm (skin) */}
+          <mesh position={[side * 0.53, 0.3, 0]} rotation={[0, 0, side * 0.12]} castShadow>
+            <capsuleGeometry args={[0.098, 0.4, 12, 20]} />
             {skin}
           </mesh>
-          <mesh position={[side * 0.58, -0.18, 0]} rotation={[0, 0, side * 0.12]} castShadow>
-            <capsuleGeometry args={[0.088, 0.5, 12, 20]} />
+          {/* forearm */}
+          <mesh position={[side * 0.6, -0.2, 0]} rotation={[0, 0, side * 0.12]} castShadow>
+            <capsuleGeometry args={[0.085, 0.48, 12, 20]} />
             {skin}
           </mesh>
           {/* hand */}
-          <mesh position={[side * 0.64, -0.5, 0]} castShadow>
+          <mesh position={[side * 0.65, -0.52, 0]} castShadow>
             <sphereGeometry args={[0.1, 16, 16]} />
             <meshStandardMaterial color={SKIN_DEEP} roughness={0.6} />
           </mesh>
         </group>
       ))}
 
-      {/* legs */}
+      {/* ---- legs: trousers + shoes ---- */}
       {[-1, 1].map((side) => (
         <group key={side}>
           <mesh position={[side * 0.17, -0.7, 0]} castShadow>
-            <capsuleGeometry args={[0.135, 0.6, 12, 20]} />
-            {skin}
+            <capsuleGeometry args={[0.14, 0.62, 12, 20]} />
+            {pants}
           </mesh>
           <mesh position={[side * 0.17, -1.42, 0]} castShadow>
-            <capsuleGeometry args={[0.11, 0.58, 12, 20]} />
-            {skin}
+            <capsuleGeometry args={[0.115, 0.6, 12, 20]} />
+            {pants}
           </mesh>
-          {/* foot */}
-          <mesh position={[side * 0.17, -1.78, 0.1]} castShadow>
-            <boxGeometry args={[0.16, 0.1, 0.3]} />
-            <meshStandardMaterial color={SKIN_DEEP} roughness={0.6} />
+          {/* shoe */}
+          <mesh position={[side * 0.17, -1.8, 0.12]} castShadow>
+            <boxGeometry args={[0.18, 0.12, 0.34]} />
+            <meshStandardMaterial color={SHOE} roughness={0.5} metalness={0.05} />
           </mesh>
         </group>
       ))}
