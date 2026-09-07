@@ -29,9 +29,9 @@ export default function WelcomeScreen() {
   const timeoutRef = useRef<NodeJS.Timeout>(null);
 
   useEffect(() => {
-    // Speak on mount after a short delay
+    // Speak on mount after a short delay — Aaya steps out and opens her arms.
     const timeout = setTimeout(() => {
-      speak("Namaste! Welcome. Please choose your language.");
+      speak("Namaste! Welcome. Please choose your language.", { gesture: 'welcome', stage: true });
     }, 800);
     return () => clearTimeout(timeout);
   }, [speak]);
@@ -47,8 +47,8 @@ export default function WelcomeScreen() {
     setLanguage(langId);
     setHasSelected(true);
     
-    // Avatar speaks the language-specific greeting
-    speak(greeting, langId);
+    // Avatar speaks the language-specific greeting with a warm wave
+    speak(greeting, { language: langId, gesture: 'wave', stage: true });
 
     // Cancel any existing timeout
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -65,45 +65,45 @@ export default function WelcomeScreen() {
   };
 
   return (
-    <div className="absolute inset-0 bg-bg flex flex-col pt-12 pb-8 px-12 overflow-hidden">
+    <div className="absolute inset-0 flex flex-col pt-14 pb-8 px-12 overflow-hidden">
 
       {/* Header / Logo */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col items-center justify-center gap-3 mb-14"
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+        className="flex flex-col items-center justify-center gap-4 mb-12"
       >
         <div className="flex items-center gap-4">
-          <div className="bg-primary text-white p-4 rounded-2xl shadow-[0_16px_34px_-16px_rgba(31,122,110,0.9)]">
+          <div className="bg-primary text-white p-4 rounded-2xl shadow-[var(--shadow-lift)]">
             <Stethoscope size={48} />
           </div>
-          <h1 className="text-6xl font-extrabold text-ink tracking-tight">MediKiosk</h1>
+          <h1 className="text-7xl font-extrabold text-ink tracking-tight">MediKiosk</h1>
         </div>
-        <p className="text-2xl text-muted font-medium">Choose your language • अपनी भाषा चुनें</p>
+        <p className="text-3xl text-ink font-bold">Choose your language</p>
+        <p className="text-2xl text-muted font-medium -mt-1">अपनी भाषा चुनें</p>
       </motion.div>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col items-center max-w-5xl mx-auto w-full z-10">
         
         {/* Language Grid */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="flex flex-wrap justify-center gap-8 mb-16"
-        >
-          {LANGUAGES.map((lang) => (
+        <div className="flex flex-wrap justify-center gap-8 mb-16">
+          {LANGUAGES.map((lang, i) => (
             <motion.button
               key={lang.id}
-              whileHover={{ scale: 1.05 }}
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 + i * 0.08, type: 'spring', stiffness: 220, damping: 20 }}
+              whileHover={{ scale: 1.05, y: -6 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => handleLanguageSelect(lang.id, lang.greeting)}
               className={cn(
-                "flex flex-col items-center justify-center p-8 rounded-[1.75rem] w-56 h-56 gap-3 transition-all duration-300",
+                "flex flex-col items-center justify-center p-8 rounded-[1.75rem] w-56 h-56 gap-3 transition-shadow duration-300",
                 "bg-surface outline-none focus-visible:ring-8 focus-visible:ring-primary/40",
                 language === lang.id && hasSelected
-                  ? "shadow-[var(--shadow-warm)] ring-4 ring-primary scale-105"
-                  : "shadow-[var(--shadow-soft)] hover:-translate-y-1 hover:shadow-[var(--shadow-warm)] border border-hairline"
+                  ? "shadow-[var(--shadow-lift)] ring-4 ring-primary"
+                  : "shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-warm)] border border-hairline"
               )}
             >
               <span className="text-5xl">{lang.flag}</span>
@@ -120,7 +120,7 @@ export default function WelcomeScreen() {
               )}
             </motion.button>
           ))}
-        </motion.div>
+        </div>
 
         {/* Voice Input Hint & Manual Next Button Container */}
         <div className="mt-auto w-full h-32 flex items-center justify-center relative">

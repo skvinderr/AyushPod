@@ -4,9 +4,15 @@ import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { Stethoscope, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useSessionStore } from '../store/useSessionStore';
+
+const LANG_LABELS: Record<string, string> = {
+  hi: 'हिंदी', en: 'EN', bn: 'বাংলা', ta: 'தமிழ்', mr: 'मराठी',
+};
 
 export function TopBar() {
   const pathname = usePathname();
+  const language = useSessionStore((s) => s.language);
   const [time, setTime] = useState("");
 
   useEffect(() => {
@@ -42,13 +48,12 @@ export function TopBar() {
         <span className="text-3xl font-extrabold text-ink tracking-tight">MediKiosk</span>
       </motion.div>
 
-      {/* Language Toggle (Mock for now) */}
+      {/* Current language — reflects the choice made on the welcome screen */}
       <div className="flex-1 flex justify-end">
-        <button className="flex items-center gap-2 bg-surface px-6 py-3 rounded-full shadow-sm border border-hairline text-ink font-semibold hover:shadow-md transition-shadow">
+        <div className="flex items-center gap-2 bg-surface px-6 py-3 rounded-full shadow-sm border border-hairline text-ink font-semibold">
           <Globe size={20} className="text-primary" />
-          <span>EN</span>
-          <span className="ml-2 text-xs text-muted">▼</span>
-        </button>
+          <span>{LANG_LABELS[language] ?? 'EN'}</span>
+        </div>
       </div>
       
     </div>

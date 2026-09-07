@@ -22,7 +22,7 @@ const CHEEK = '#e8896f';
 const DARK = '#3a3330';
 
 function Character() {
-  const { state, mouth } = useAvatar();
+  const { state, mouth, gesture } = useAvatar();
 
   const group = useRef<THREE.Group>(null);
   const head = useRef<THREE.Group>(null);
@@ -33,6 +33,9 @@ function Character() {
   const pupilR = useRef<THREE.Mesh>(null);
   const browL = useRef<THREE.Mesh>(null);
   const browR = useRef<THREE.Mesh>(null);
+  // Arm pivots (rotate at the shoulder). Left/right are the viewer's left/right.
+  const armL = useRef<THREE.Group>(null);
+  const armR = useRef<THREE.Group>(null);
 
   const { pointer } = useThree();
 
@@ -126,6 +129,48 @@ function Character() {
       const wide = state === 'concerned' ? 0.7 : 1;
       mouthMesh.current.scale.x = THREE.MathUtils.damp(mouthMesh.current.scale.x, wide, 10, delta);
     }
+
+    // ---- Arms / hand gestures ----
+    // Resting pose: arms hang softly at her sides (rotation.z splays them out
+    // a touch). Each gesture damps the shoulder rotation toward a target; the
+    // right arm gets a small live oscillation for wave/point so it feels alive.
+    let lz = 0.35;   // left arm out-splay (viewer left)
+    let lx = 0;      // left arm forward/back
+    let rz = -0.35;  // right arm out-splay (viewer right)
+    let rx = 0;      // right arm forward/back
+    const osc = Math.sin(t * 7) * 0.18;
+
+    switch (gesture) {
+      case 'wave':
+        rz = -2.3;               // right arm up beside the head
+        rx = 0.2 + osc;          // waving oscillation
+        break;
+      case 'welcome':
+        lz = 1.15; rz = -1.15;   // both arms open outward, palms up
+        lx = 0.35; rx = 0.35;
+        break;
+      case 'present':
+        lz = 0.7; rz = -0.7;     // both hands gesture forward toward content
+        lx = 1.15; rx = 1.15;
+        break;
+      case 'point-right':
+        rz = -1.5;               // right arm extends toward content on the right
+        rx = 1.2 + osc * 0.4;
+        break;
+      case 'point-down':
+        rz = -0.5;               // right arm angles down toward tiles below
+        rx = 1.4;
+        break;
+    }
+
+    if (armL.current) {
+      armL.current.rotation.z = THREE.MathUtils.damp(armL.current.rotation.z, lz, 7, delta);
+      armL.current.rotation.x = THREE.MathUtils.damp(armL.current.rotation.x, lx, 7, delta);
+    }
+    if (armR.current) {
+      armR.current.rotation.z = THREE.MathUtils.damp(armR.current.rotation.z, rz, 7, delta);
+      armR.current.rotation.x = THREE.MathUtils.damp(armR.current.rotation.x, rx, 7, delta);
+    }
   });
 
   return (
@@ -145,6 +190,32 @@ function Character() {
         <sphereGeometry args={[0.06, 16, 16]} />
         <meshStandardMaterial color="#ffffff" emissive={CHEEK} emissiveIntensity={0.3} />
       </mesh>
+
+      {/* ===== Arms (pivot at the shoulder; geometry hangs downward) ===== */}
+      {/* Left arm (viewer's left) */}
+      <group ref={armL} position={[-0.6, 0.5, 0.05]}>
+        <mesh position={[0, -0.42, 0]} castShadow>
+          <capsuleGeometry args={[0.15, 0.62, 8, 20]} />
+          <meshStandardMaterial color={TEAL} roughness={0.85} />
+        </mesh>
+        {/* hand */}
+        <mesh position={[0, -0.86, 0]} castShadow>
+          <sphereGeometry args={[0.17, 20, 20]} />
+          <meshStandardMaterial color={SKIN} roughness={0.55} />
+        </mesh>
+      </group>
+      {/* Right arm (viewer's right) */}
+      <group ref={armR} position={[0.6, 0.5, 0.05]}>
+        <mesh position={[0, -0.42, 0]} castShadow>
+          <capsuleGeometry args={[0.15, 0.62, 8, 20]} />
+          <meshStandardMaterial color={TEAL} roughness={0.85} />
+        </mesh>
+        {/* hand */}
+        <mesh position={[0, -0.86, 0]} castShadow>
+          <sphereGeometry args={[0.17, 20, 20]} />
+          <meshStandardMaterial color={SKIN} roughness={0.55} />
+        </mesh>
+      </group>
 
       {/* ===== Head group ===== */}
       <group ref={head} position={[0, 1.15, 0]}>

@@ -35,7 +35,7 @@ export default function ScanScreen() {
 
   useEffect(() => {
     if (step === 'select') {
-      speak("Do you have any old prescriptions or reports? You can scan them now.", language);
+      speak("Do you have any old prescriptions or reports? You can scan them now.", { language, gesture: 'point-down', stage: true });
     }
   }, [step, speak, language]);
 
@@ -190,13 +190,14 @@ export default function ScanScreen() {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center pb-12">
       
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-6xl bg-surface rounded-[2rem] shadow-[var(--shadow-warm)] border border-hairline p-12 flex flex-col min-h-[75vh]"
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="w-full max-w-6xl bg-surface rounded-[2.5rem] shadow-[var(--shadow-lift)] border border-hairline p-12 flex flex-col min-h-[75vh]"
       >
         <StepIndicator currentStep={4} totalSteps={4} title="Scan Documents" />
-        <p className="text-2xl text-muted mb-8">Have any past prescriptions or reports? Let's scan them.</p>
+        <p className="text-2xl text-muted mb-8 -mt-4">Have any past prescriptions or reports? Let's scan them.</p>
 
         <AnimatePresence mode="wait">
           

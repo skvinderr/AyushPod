@@ -87,12 +87,12 @@ export default function ComplaintScreen() {
   const [rotateSignal, setRotateSignal] = useState(0);
 
   useEffect(() => {
-    speak('Where does it hurt? Touch the part of the body that bothers you, or tell me in your own words.', language);
+    speak('Where does it hurt? Touch the part of the body that bothers you, or tell me in your own words.', { language, gesture: 'point-right', stage: true });
   }, [speak, language]);
 
   const handleZone = (id: string) => {
     setActiveZone(id);
-    speak(`${ZONE_CONFIG[id].title}. How does it feel?`, language);
+    speak(`${ZONE_CONFIG[id].title}. How does it feel?`, { language, gesture: 'present', stage: true });
   };
 
   const handleFeel = (feelId: string) => {
@@ -112,7 +112,8 @@ export default function ComplaintScreen() {
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-6xl bg-surface rounded-[2rem] shadow-[var(--shadow-warm)] border border-hairline p-10 flex flex-col min-h-[74vh]"
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="w-full max-w-6xl bg-surface rounded-[2.5rem] shadow-[var(--shadow-lift)] border border-hairline p-10 flex flex-col min-h-[74vh]"
       >
         <StepIndicator currentStep={2} totalSteps={4} title="Where does it hurt?" />
 

@@ -26,6 +26,27 @@
 
   --shadow-warm: 0 18px 40px -20px rgba(70, 55, 40, 0.28);
   --shadow-soft: 0 8px 24px -12px rgba(70, 55, 40, 0.18);
+  /* Deeper lift for the ONE focal element per screen */
+  --shadow-lift: 0 30px 70px -28px rgba(31, 122, 110, 0.45);
+
+  /* Warm ambient depth — soft teal glow anchored top-left (where Aaya lives) */
+  --glow: radial-gradient(
+      1100px 820px at 8% -6%,
+      rgba(42, 157, 143, 0.16),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 700px at 100% 108%,
+      rgba(244, 162, 97, 0.12),
+      transparent 55%
+    );
+  /* Warm scrim behind Aaya when she steps onto the stage */
+  --stage-scrim: radial-gradient(
+    closest-side,
+    rgba(226, 241, 238, 0.95),
+    rgba(226, 241, 238, 0.55) 55%,
+    transparent 100%
+  );
 }
 
 @theme inline {
@@ -50,6 +71,20 @@ body {
   color: var(--ink);
   font-family: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Warm ambient background layer — the soft glow that gives every screen depth
+ * without a hard card edge. Sits behind all content, fixed so it never scrolls. */
+.ambient {
+  position: relative;
+}
+.ambient::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: var(--glow);
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* Calm motion for anyone who asks for it */

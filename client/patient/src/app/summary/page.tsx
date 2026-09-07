@@ -99,9 +99,9 @@ export default function SummaryScreen() {
 
   useEffect(() => {
     if (activeSectionIndex < sections.length) {
-      speak(sections[activeSectionIndex].spokenText, language);
+      speak(sections[activeSectionIndex].spokenText, { language, gesture: 'present', stage: true });
     } else {
-      speak("Great. If everything looks correct, please confirm and submit.", language);
+      speak("Great. If everything looks correct, please confirm and submit.", { language, gesture: 'present', stage: true });
     }
   }, [activeSectionIndex, speak, language]);
 
@@ -123,12 +123,13 @@ export default function SummaryScreen() {
     <div className="w-full h-full flex flex-col items-center justify-center pb-32">
 
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-4xl bg-surface rounded-[2rem] shadow-[var(--shadow-warm)] border border-hairline p-12 flex flex-col"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="w-full max-w-4xl bg-surface rounded-[2.5rem] shadow-[var(--shadow-lift)] border border-hairline p-12 flex flex-col"
       >
         <StepIndicator currentStep={4} totalSteps={4} title="Review & Confirm Details" />
-        <p className="text-2xl text-muted mb-12">Please check and confirm your information.</p>
+        <p className="text-2xl text-muted mb-12 -mt-4">Please check and confirm your information.</p>
 
         <div className="flex flex-col gap-8 w-full">
           {sections.map((section, idx) => {

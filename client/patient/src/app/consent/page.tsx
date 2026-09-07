@@ -39,11 +39,11 @@ export default function ConsentScreen() {
 
   useEffect(() => {
     if (step === 'identity') {
-      speak("How would you like to identify yourself?", language);
+      speak("How would you like to identify yourself?", { language, gesture: 'present', stage: true });
     } else if (step === 'details') {
-      speak("Please enter your details using the keypad.", language);
+      speak("Please enter your details using the keypad.", { language, gesture: 'point-down', stage: true });
     } else if (step === 'consent') {
-      speak("Please review the data collection terms.", language);
+      speak("Please review the data collection terms.", { language, gesture: 'present', stage: true });
     }
   }, [step, language, speak]);
 
@@ -79,16 +79,17 @@ export default function ConsentScreen() {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center pb-12">
       
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-4xl bg-surface rounded-[2rem] shadow-[var(--shadow-warm)] border border-hairline p-12 flex flex-col min-h-[70vh]"
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="w-full max-w-4xl bg-surface rounded-[2.5rem] shadow-[var(--shadow-lift)] border border-hairline p-12 flex flex-col min-h-[70vh]"
       >
 
         <StepIndicator
           currentStep={getStepNumber()}
           totalSteps={4} // Total steps in app: 1.ID/Consent 2.Complaint 3.Interview 4.Scan
-          title={step === 'consent' ? 'Review & Confirm' : 'Patient Identification'} 
+          title={step === 'consent' ? 'Review & Confirm' : 'Patient Identification'}
         />
 
         <div className="flex-1 flex flex-col">

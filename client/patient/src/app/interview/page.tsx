@@ -41,9 +41,9 @@ export default function InterviewScreen() {
   // Speak the question on mount or index change
   useEffect(() => {
     if (isVoiceNarration) {
-      speak("Please describe your problem in detail.", language);
+      speak("Please describe your problem in detail.", { language, gesture: 'present', stage: true });
     } else if (!isConfirming && currentQuestion) {
-      speak(currentQuestion.text, language);
+      speak(currentQuestion.text, { language, gesture: 'present', stage: true });
     }
   }, [currentIndex, isConfirming, currentQuestion, isVoiceNarration, speak, language]);
 
@@ -111,10 +111,11 @@ export default function InterviewScreen() {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center pb-12">
       
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-5xl bg-surface rounded-[2rem] shadow-[var(--shadow-warm)] border border-hairline p-12 flex flex-col min-h-[70vh]"
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="w-full max-w-5xl bg-surface rounded-[2.5rem] shadow-[var(--shadow-lift)] border border-hairline p-12 flex flex-col min-h-[70vh]"
       >
         <StepIndicator currentStep={3} totalSteps={4} title="Medical History" />
 

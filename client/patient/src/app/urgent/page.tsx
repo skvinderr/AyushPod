@@ -37,8 +37,8 @@ export default function UrgentScreen() {
             <AlertTriangle size={120} />
           </div>
 
-          <h1 className="text-6xl font-extrabold text-coral uppercase tracking-wide">
-            Please Notify Staff
+          <h1 className="text-6xl font-extrabold text-coral tracking-tight">
+            Please notify staff
           </h1>
 
           <p className="text-3xl text-ink font-medium">

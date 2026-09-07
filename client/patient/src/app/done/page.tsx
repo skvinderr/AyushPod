@@ -21,8 +21,11 @@ export default function DoneScreen() {
     setTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
   }, []);
 
+  const { setState } = useAvatar();
+
   useEffect(() => {
-    speak("Thank you. Your doctor will have this ready when you go in.", language);
+    setState('happy');
+    speak("Thank you. Your doctor will have this ready when you go in.", { language, gesture: 'wave', stage: true });
 
     const timer = setTimeout(() => {
       resetSession();
@@ -31,26 +34,27 @@ export default function DoneScreen() {
     }, 8000);
 
     return () => clearTimeout(timer);
-  }, [speak, language, resetSession]);
+  }, [speak, language, resetSession, setState]);
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center pb-12">
 
       <motion.div
-        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        initial={{ scale: 0.94, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
-        className="w-full max-w-2xl bg-surface rounded-[2rem] shadow-[var(--shadow-warm)] border border-hairline flex flex-col relative overflow-hidden"
+        transition={{ type: 'spring', stiffness: 180, damping: 22 }}
+        className="w-full max-w-2xl bg-surface rounded-[2.5rem] shadow-[var(--shadow-lift)] border border-hairline flex flex-col relative overflow-hidden"
       >
 
         {/* Success Header Area */}
         <div className="flex flex-col items-center justify-center p-12 bg-primary-soft border-b-2 border-dashed border-hairline">
-          <div className="flex items-center gap-3 text-primary-deep font-semibold tracking-widest uppercase text-lg mb-6">
-            <CheckCircle2 size={24} />
-            <span>Registration Successful</span>
+          <div className="flex items-center gap-3 text-primary-deep font-bold text-2xl mb-5">
+            <CheckCircle2 size={32} />
+            <span>Registration successful</span>
           </div>
 
-          <h1 className="text-5xl font-extrabold text-ink tracking-tight text-center leading-tight">
-            You're All Set For<br/>Your Visit
+          <h1 className="text-6xl font-extrabold text-ink tracking-tight text-center leading-tight">
+            You're all set for<br/>your visit
           </h1>
         </div>
 
@@ -60,8 +64,8 @@ export default function DoneScreen() {
 
         {/* Token Details Area */}
         <div className="p-12 flex flex-col items-center">
-          <span className="text-sm font-semibold text-muted tracking-widest uppercase">Your Ticket Number</span>
-          <span className="text-8xl font-extrabold text-ink mt-2 mb-8">{token}</span>
+          <span className="text-xl font-semibold text-muted">Your token number</span>
+          <span className="text-8xl font-extrabold text-primary-deep mt-2 mb-8">{token}</span>
 
           <div className="w-full flex justify-between items-center bg-surface-warm p-6 rounded-2xl border border-hairline mb-12">
             <div className="flex items-center gap-3">
