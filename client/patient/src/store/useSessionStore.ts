@@ -53,3 +53,10 @@ export const useSessionStore = create<SessionState>((set) => ({
       historyAnswers: {},
     }),
 }));
+
+// Dev-only affordance: expose the store so a specific intake state (e.g. a
+// chiefComplaint category) can be set from the console to test a screen in
+// isolation. Stripped from production builds.
+if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
+  (window as unknown as { useSessionStore?: typeof useSessionStore }).useSessionStore = useSessionStore;
+}

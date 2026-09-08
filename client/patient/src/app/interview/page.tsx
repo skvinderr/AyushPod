@@ -129,13 +129,13 @@ export default function InterviewScreen() {
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -50 }}
-            className="w-full flex flex-col items-center gap-8"
+            className="w-full flex flex-col items-center gap-6"
           >
-            <h1 className="text-5xl font-extrabold text-ink text-center leading-tight tracking-tight max-w-4xl">
+            <h1 className="text-[2.5rem] font-extrabold text-ink text-center leading-tight tracking-tight max-w-4xl">
               {currentQuestion.text}
             </h1>
 
-            <div className={cn('grid gap-6 w-full', currentQuestion.options.length <= 4 ? 'grid-cols-2' : 'grid-cols-3')}>
+            <div className={cn('grid gap-5 w-full', currentQuestion.options.length === 3 ? 'grid-cols-3' : 'grid-cols-2')}>
               {currentQuestion.options.map((opt) => (
                 <IconTile
                   key={opt.id}
@@ -143,7 +143,7 @@ export default function InterviewScreen() {
                   label={opt.label}
                   selected={selectedOption === opt.id}
                   onClick={() => !isConfirming && handleOptionSelect(opt.id, opt.confirmationText, opt.triggersRedFlag)}
-                  className={cn('h-52', isConfirming && selectedOption !== opt.id ? 'opacity-50 grayscale' : '')}
+                  className={cn(currentQuestion.options.length >= 4 ? 'h-40' : 'h-52', isConfirming && selectedOption !== opt.id ? 'opacity-50 grayscale' : '')}
                   disabled={isConfirming}
                 />
               ))}
