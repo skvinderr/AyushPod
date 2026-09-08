@@ -13,10 +13,14 @@ export default function DoneScreen() {
   const { language, resetSession } = useSessionStore();
 
   const [dataCleared, setDataCleared] = useState(false);
-  const token = 'A-' + Math.floor(100 + Math.random() * 900);
 
+  // Token + time are generated client-side on mount. Computing a random token
+  // during render would make the server-prerendered HTML disagree with the
+  // client's first render, tripping a hydration mismatch on this screen.
+  const [token, setToken] = useState('');
   const [time, setTime] = useState('');
   useEffect(() => {
+    setToken('A-' + Math.floor(100 + Math.random() * 900));
     setTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
   }, []);
 
@@ -52,7 +56,9 @@ export default function DoneScreen() {
 
           <div className="mt-8">
             <span className="text-xl font-semibold text-muted">Your token number</span>
-            <div className="text-8xl font-extrabold text-primary-deep leading-none mt-1">{token}</div>
+            <div className="text-8xl font-extrabold text-primary-deep leading-none mt-1">
+              {token || <span className="opacity-25">A-···</span>}
+            </div>
           </div>
 
           <div className="mt-8 flex gap-4">
