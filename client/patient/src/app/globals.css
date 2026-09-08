@@ -72,13 +72,15 @@
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-hairline: var(--hairline);
-  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-poppins), var(--font-noto-devanagari), ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
   background: var(--bg);
   color: var(--ink);
-  font-family: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  /* Poppins first for Latin; Noto Sans Devanagari picks up हिंदी glyphs that
+   * Poppins lacks. Browsers fall through per-glyph, so mixed scripts render. */
+  font-family: var(--font-poppins), var(--font-noto-devanagari), ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 

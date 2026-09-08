@@ -9,19 +9,21 @@ import { IconTile } from '../../components/IconTile';
 import { LargeTouchButton } from '../../components/LargeTouchButton';
 import { Camera, ImagePlus, X, Check, ArrowRight, RefreshCcw, FileText } from 'lucide-react';
 import { cn } from '../../components/LargeTouchButton';
+import { useT } from '../../i18n';
 
 type ScanStep = 'select' | 'camera' | 'processing' | 'confirm';
 
 interface ScannedDoc {
   id: string;
   dataUrl: string;
-  ocrData?: any;
+  ocrData?: { type: string; date: string; items: string[] };
 }
 
 export default function ScanScreen() {
   const router = useRouter();
   const { speak } = useAvatar();
   const { language } = useSessionStore();
+  const { t } = useT();
 
   const [step, setStep] = useState<ScanStep>('select');
   const [docs, setDocs] = useState<ScannedDoc[]>([]);
@@ -34,8 +36,9 @@ export default function ScanScreen() {
 
   useEffect(() => {
     if (step === 'select') {
-      speak('Do you have any old prescriptions or reports? You can scan them now.', { language, gesture: 'point-down', stage: true });
+      speak(t('scan.spoken.prompt'), { language, gesture: 'point-down', stage: true });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, speak, language]);
 
   useEffect(() => {
@@ -55,10 +58,10 @@ export default function ScanScreen() {
         videoRef.current.play();
       }
       setStep('camera');
-      speak('Hold the document steady in the frame and tap capture.', language);
+      speak(t('scan.spoken.steady'), language);
     } catch (err) {
       console.error('Camera access denied or unavailable', err);
-      speak("I couldn't access the camera. Please upload from gallery.", language);
+      speak(t('scan.spoken.noCamera'), language);
     }
   };
 
@@ -84,7 +87,7 @@ export default function ScanScreen() {
     const avgBrightness = brightnessSum / (data.length / 16);
 
     if (avgBrightness < 40) {
-      setQualityWarning("The image is too dark. Please make sure it's well lit.");
+      setQualityWarning(t('scan.warning.dark'));
       return false;
     }
 
@@ -96,11 +99,11 @@ export default function ScanScreen() {
     stopCamera();
     setCurrentImage(dataUrl);
     setStep('processing');
-    speak('Checking the image…', language);
+    speak(t('scan.spoken.checking'), language);
 
     setTimeout(() => {
       setStep('confirm');
-      speak('Here is what I found. Does this look correct?', language);
+      speak(t('scan.spoken.found'), language);
     }, 2500);
   };
 
@@ -123,13 +126,14 @@ export default function ScanScreen() {
       qcCtx.drawImage(canvas, 0, 0, 100, 100);
       const imgData = qcCtx.getImageData(0, 0, 100, 100);
       if (!checkImageQuality(imgData)) {
-        speak('The image is too dark. Please retake it in better light.', language);
+        speak(t('scan.spoken.tooDark'), language);
         return;
       }
     }
 
     const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
     processImage(dataUrl);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language, speak]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -150,7 +154,7 @@ export default function ScanScreen() {
           qcCtx.drawImage(img, 0, 0, 100, 100);
           const imgData = qcCtx.getImageData(0, 0, 100, 100);
           if (!checkImageQuality(imgData)) {
-            speak('The uploaded image is too dark. Please try another one.', language);
+            speak(t('scan.spoken.uploadDark'), language);
             setStep('select');
             return;
           }
@@ -170,21 +174,21 @@ export default function ScanScreen() {
     ]);
     setCurrentImage(null);
     setStep('select');
-    speak('Saved. You can scan another, or finish.', language);
+    speak(t('scan.spoken.saved'), language);
   };
 
   const rejectDocument = () => {
     setCurrentImage(null);
     setStep('select');
-    speak("No problem. Let's try again.", language);
+    speak(t('scan.spoken.retry'), language);
   };
 
   return (
     <div className="relative h-full flex flex-col">
       {/* prompt */}
       <div className="pb-3">
-        <h1 className="text-5xl font-extrabold text-ink tracking-tight">Any old reports?</h1>
-        <p className="text-2xl text-muted mt-1">Scan past prescriptions or reports so the doctor can see them.</p>
+        <h1 className="text-5xl font-extrabold text-ink tracking-tight">{t('scan.heading')}</h1>
+        <p className="text-2xl text-muted mt-1">{t('scan.sub')}</p>
       </div>
 
       <div className="relative flex-1 min-h-0">
@@ -199,8 +203,8 @@ export default function ScanScreen() {
               className="h-full flex flex-col items-center justify-center gap-9"
             >
               <div className="flex gap-7">
-                <IconTile icon={Camera} label="Scan with camera" onClick={startCamera} className="w-72 h-72" />
-                <IconTile icon={ImagePlus} label="Upload from gallery" onClick={() => fileInputRef.current?.click()} className="w-72 h-72" />
+                <IconTile icon={Camera} label={t('scan.camera')} onClick={startCamera} className="w-72 h-72" />
+                <IconTile icon={ImagePlus} label={t('scan.upload')} onClick={() => fileInputRef.current?.click()} className="w-72 h-72" />
                 <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" className="hidden" />
               </div>
 
@@ -209,7 +213,7 @@ export default function ScanScreen() {
                 variant={docs.length > 0 ? 'primary' : 'outline'}
                 className="w-[34rem] py-5"
               >
-                <span className="text-2xl">{docs.length > 0 ? 'Done scanning' : "I have no documents to scan"}</span>
+                <span className="text-2xl">{docs.length > 0 ? t('scan.doneScanning') : t('scan.noDocuments')}</span>
                 <ArrowRight size={30} className="ml-2" />
               </LargeTouchButton>
             </motion.div>
@@ -250,7 +254,7 @@ export default function ScanScreen() {
           {step === 'processing' && (
             <motion.div key="processing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full flex flex-col items-center justify-center gap-8">
               <div className="w-56 h-56 border-[16px] border-hairline border-t-primary rounded-full animate-spin" />
-              <h2 className="text-4xl font-bold text-ink">Reading document…</h2>
+              <h2 className="text-4xl font-bold text-ink">{t('scan.reading')}</h2>
             </motion.div>
           )}
 
@@ -265,21 +269,21 @@ export default function ScanScreen() {
                 <div className="bg-surface p-9 rounded-[1.75rem] shadow-[var(--card-lift)] border border-hairline flex flex-col gap-5">
                   <div className="flex items-center gap-3 text-primary">
                     <FileText size={40} />
-                    <h2 className="text-3xl font-bold">What I found</h2>
+                    <h2 className="text-3xl font-bold">{t('scan.found')}</h2>
                   </div>
 
                   <div className="space-y-3 text-2xl">
                     <div className="flex justify-between border-b border-hairline pb-3">
-                      <span className="text-muted">Document</span>
-                      <span className="font-bold text-ink">Blood report</span>
+                      <span className="text-muted">{t('scan.doc.document')}</span>
+                      <span className="font-bold text-ink">{t('scan.doc.bloodReport')}</span>
                     </div>
                     <div className="flex justify-between border-b border-hairline pb-3">
-                      <span className="text-muted">Date</span>
-                      <span className="font-bold text-ink">12 Aug 2026</span>
+                      <span className="text-muted">{t('scan.doc.date')}</span>
+                      <span className="font-bold text-ink">{t('scan.doc.dateValue')}</span>
                     </div>
                     <div className="flex justify-between pb-1">
-                      <span className="text-muted">Key value</span>
-                      <span className="font-bold text-ink">Hemoglobin 12.5</span>
+                      <span className="text-muted">{t('scan.doc.keyValue')}</span>
+                      <span className="font-bold text-ink">{t('scan.doc.hemoglobin')}</span>
                     </div>
                   </div>
                 </div>
@@ -287,11 +291,11 @@ export default function ScanScreen() {
                 <div className="flex gap-5">
                   <LargeTouchButton onClick={rejectDocument} variant="secondary" className="flex-1 py-6">
                     <RefreshCcw size={32} className="mr-3" />
-                    <span className="text-2xl">Retake</span>
+                    <span className="text-2xl">{t('scan.retake')}</span>
                   </LargeTouchButton>
                   <LargeTouchButton onClick={confirmDocument} className="flex-1 py-6">
                     <Check size={32} className="mr-3" />
-                    <span className="text-2xl">Looks good</span>
+                    <span className="text-2xl">{t('scan.looksGood')}</span>
                   </LargeTouchButton>
                 </div>
               </div>
@@ -308,7 +312,7 @@ export default function ScanScreen() {
               exit={{ opacity: 0, y: 100 }}
               className="absolute bottom-0 left-0 right-0 h-40 bg-surface/90 backdrop-blur-md border border-hairline rounded-[1.5rem] px-8 py-5 flex items-center gap-5 shadow-[var(--card-lift)]"
             >
-              <span className="text-xl font-bold text-ink w-28">Scanned ({docs.length})</span>
+              <span className="text-xl font-bold text-ink w-28">{t('scan.scannedCount', { count: docs.length })}</span>
               <div className="flex-1 flex gap-4 overflow-x-auto pb-1">
                 {docs.map((doc) => (
                   <div key={doc.id} className="w-28 h-28 flex-shrink-0 rounded-2xl overflow-hidden border-4 border-hairline shadow-sm relative">

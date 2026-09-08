@@ -39,6 +39,24 @@ interface AvatarStore {
 
 let mouthTimer: ReturnType<typeof setInterval> | null = null;
 let fallbackTimer: ReturnType<typeof setTimeout> | null = null;
+// The audio element for the line currently playing. Each new line stops the
+// previous one so lines never overlap. Monotonic token guards against a slow
+// TTS response arriving after a newer line has already started.
+let currentAudio: HTMLAudioElement | null = null;
+let speakToken = 0;
+
+function stopCurrentAudio() {
+  if (currentAudio) {
+    currentAudio.onended = null;
+    currentAudio.onerror = null;
+    try {
+      currentAudio.pause();
+    } catch {
+      /* ignore */
+    }
+    currentAudio = null;
+  }
+}
 
 function startMouth(set: (partial: Partial<AvatarStore>) => void) {
   stopMouth(set);
@@ -76,6 +94,8 @@ export const useAvatar = create<AvatarStore>((set) => ({
 
     // Clear any in-flight line so a new one takes over cleanly.
     if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
+    stopCurrentAudio();
+    const myToken = ++speakToken;
 
     // Enter IMMEDIATELY (synchronously) so guidance is always visible — even on
     // kiosks whose SpeechSynthesis has no installed voices and never fires
@@ -89,6 +109,7 @@ export const useAvatar = create<AvatarStore>((set) => ({
       if (ended) return;
       ended = true;
       if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
+      stopCurrentAudio();
       stopMouth(set);
       // Retreat to the corner after guiding; caption is only shown while
       // actively speaking, so always clear it here.
@@ -96,25 +117,46 @@ export const useAvatar = create<AvatarStore>((set) => ({
     };
 
     // Reading-time fallback so she always retreats, TTS or not (~150 wpm).
+    // If Sarvam audio arrives and plays, its real `onended` drives `finish()`
+    // instead (more accurate); the timer still covers the silent/offline case.
     const words = text.trim().split(/\s+/).filter(Boolean).length;
     const estMs = Math.min(12_000, Math.max(2_600, words * 380));
     fallbackTimer = setTimeout(finish, estMs);
 
-    // Browser SpeechSynthesis. Swappable for Sarvam TTS later.
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = language === 'en' ? 'en-IN' : 'hi-IN';
-      utterance.rate = 0.95;
-      utterance.pitch = 1.05;
-
-      // If TTS actually runs, let its real end drive the retreat (more accurate
-      // than the estimate); the fallback timer still covers the silent case.
-      utterance.onend = finish;
-      utterance.onerror = finish;
-
-      window.speechSynthesis.speak(utterance);
+    // Sarvam Bulbul v3 via our server proxy. The key stays server-side; the
+    // browser only ever talks to /api/tts. Any failure leaves the fallback
+    // timer in charge, so Aaya still guides silently and never hangs.
+    if (typeof window !== 'undefined') {
+      fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, language }),
+      })
+        .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
+        .then((data: { audio?: string }) => {
+          // A newer line started while we were waiting — drop this audio.
+          if (myToken !== speakToken || ended || !data.audio) return;
+          const audio = new Audio(`data:audio/wav;base64,${data.audio}`);
+          currentAudio = audio;
+          // Real audio is playing: extend past the reading estimate and let
+          // playback end drive the retreat.
+          if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
+          audio.onended = () => {
+            if (myToken === speakToken) finish();
+          };
+          audio.onerror = () => {
+            if (myToken === speakToken) finish();
+          };
+          audio.play().catch(() => {
+            // Autoplay blocked or decode failed — fall back to a fresh timer.
+            if (myToken === speakToken && !ended) {
+              fallbackTimer = setTimeout(finish, estMs);
+            }
+          });
+        })
+        .catch(() => {
+          /* network/500: fallback timer already scheduled */
+        });
     }
   },
 }));

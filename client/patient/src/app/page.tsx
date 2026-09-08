@@ -9,29 +9,22 @@ import { LargeTouchButton } from '../components/LargeTouchButton';
 import { Mic, ArrowRight, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../components/LargeTouchButton';
-
-// Language data. `glyph` is a representative letter in each script — it renders
-// on every platform (unlike flag emoji, which fall back to "IN"/"GB" on Windows).
-const LANGUAGES = [
-  { id: 'hi', native: 'हिंदी', english: 'Hindi', glyph: 'अ', greeting: 'नमस्ते, आपका स्वागत है!' },
-  { id: 'en', native: 'English', english: 'English', glyph: 'A', greeting: 'Welcome to MediKiosk!' },
-  { id: 'bn', native: 'বাংলা', english: 'Bengali', glyph: 'অ', greeting: 'নমস্কার, আপনাকে স্বাগত!' },
-  { id: 'ta', native: 'தமிழ்', english: 'Tamil', glyph: 'அ', greeting: 'வணக்கம், நல்வரவு!' },
-  { id: 'mr', native: 'मराठी', english: 'Marathi', glyph: 'म', greeting: 'नमस्कार, आपले स्वागत आहे!' },
-];
+import { useT, translate } from '../i18n';
+import { LANGUAGES, LIVE_LANGS, fromBcp47, type LangId } from '../i18n/languages';
 
 export default function WelcomeScreen() {
   const router = useRouter();
   const { speak } = useAvatar();
   const { language, setLanguage } = useSessionStore();
   const { isListening, startListening } = useVoiceInput();
+  const { t } = useT();
 
   const [hasSelected, setHasSelected] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout>(null);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      speak('Namaste! Welcome. Please choose the language you speak.', { gesture: 'welcome', stage: true });
+      speak(translate('en', 'welcome.spoken.greeting'), { gesture: 'welcome', stage: true });
     }, 700);
     return () => clearTimeout(timeout);
   }, [speak]);
@@ -42,12 +35,32 @@ export default function WelcomeScreen() {
     };
   }, []);
 
-  const handleLanguageSelect = (langId: string, greeting: string) => {
+  const commitLanguage = (langId: LangId) => {
     setLanguage(langId);
     setHasSelected(true);
-    speak(greeting, { language: langId, gesture: 'wave', stage: true });
+    // Speak the greeting in the just-chosen language. `translate(langId, …)`
+    // reads that catalog directly (the store update hasn't propagated yet).
+    speak(translate(langId, 'welcome.spoken.greeting'), {
+      language: langId,
+      gesture: 'wave',
+      stage: true,
+    });
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => router.push('/consent'), 3200);
+  };
+
+  // Welcome always auto-detects the spoken language, then switches the UI to it.
+  const handleVoice = () => {
+    startListening({
+      language: 'unknown',
+      mode: 'transcribe',
+      onResult: ({ languageCode }) => {
+        const detected = languageCode ? fromBcp47(languageCode) : null;
+        // Fall back to Hindi if we detect an Indic language we don't yet host.
+        const target: LangId = detected && LIVE_LANGS.includes(detected) ? detected : 'hi';
+        commitLanguage(target);
+      },
+    });
   };
 
   const handleNextClick = () => {
@@ -64,9 +77,9 @@ export default function WelcomeScreen() {
         transition={{ duration: 0.5, ease: 'easeOut' }}
         className="pt-1 pb-2"
       >
-        <p className="text-xl font-semibold text-primary-deep">MediKiosk · Government Health Kiosk</p>
-        <h1 className="text-6xl font-extrabold text-ink tracking-tight mt-1">Choose your language</h1>
-        <p className="text-2xl text-muted mt-2">अपनी भाषा चुनें — tap the language you speak</p>
+        <p className="text-xl font-semibold text-primary-deep">{t('welcome.kicker')}</p>
+        <h1 className="text-6xl font-extrabold text-ink tracking-tight mt-1">{t('welcome.chooseLanguage')}</h1>
+        <p className="text-2xl text-muted mt-2">{t('welcome.chooseLanguageSub')}</p>
       </motion.div>
 
       {/* Language grid + voice */}
@@ -82,7 +95,7 @@ export default function WelcomeScreen() {
                 transition={{ delay: 0.15 + i * 0.07, type: 'spring', stiffness: 220, damping: 20 }}
                 whileHover={{ y: -6 }}
                 whileTap={{ scale: 0.96 }}
-                onClick={() => handleLanguageSelect(lang.id, lang.greeting)}
+                onClick={() => commitLanguage(lang.id)}
                 className={cn(
                   'relative flex flex-col items-center justify-center w-[188px] h-[196px] gap-3 rounded-[2rem] bg-surface transition-shadow duration-300 outline-none focus-visible:ring-8 focus-visible:ring-primary/30',
                   active
@@ -118,7 +131,7 @@ export default function WelcomeScreen() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                onClick={startListening}
+                onClick={handleVoice}
                 className={cn(
                   'flex items-center gap-5 px-9 py-5 rounded-full bg-surface shadow-[var(--shadow-soft)] border border-hairline transition-all',
                   isListening ? 'ring-4 ring-primary border-primary' : '',
@@ -128,14 +141,14 @@ export default function WelcomeScreen() {
                   <Mic size={28} />
                 </div>
                 <span className="text-2xl font-semibold text-ink">
-                  {isListening ? 'Listening…' : 'Or say your language out loud'}
+                  {isListening ? t('common.listening') : t('welcome.sayLanguage')}
                 </span>
               </motion.button>
             ) : (
               <motion.div key="next-btn" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-5">
-                <span className="text-xl font-medium text-muted">Starting automatically…</span>
+                <span className="text-xl font-medium text-muted">{t('welcome.startingAuto')}</span>
                 <LargeTouchButton onClick={handleNextClick}>
-                  <span className="text-2xl">Next</span>
+                  <span className="text-2xl">{t('common.next')}</span>
                   <ArrowRight size={30} className="ml-2" />
                 </LargeTouchButton>
               </motion.div>

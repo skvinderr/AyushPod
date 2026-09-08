@@ -1,19 +1,26 @@
-import { 
-  HeartPulse, Activity, Zap, AlertTriangle, 
+import {
+  HeartPulse, Activity, Zap, AlertTriangle,
   Clock, Calendar, ActivitySquare, AlertOctagon, Frown
 } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 
+// NOTE: `text`, `label`, and `confirmationText` below are i18n catalog KEYS,
+// not display strings. Every consumer must resolve them through `t()` (or
+// `translate(lang, …)`), so the interview renders and speaks in the selected
+// language. English values live in src/i18n/en.json under the same keys.
 export interface InterviewOption {
   id: string;
+  /** i18n key → option button label */
   label: string;
   icon: LucideIcon;
+  /** i18n key → line Aaya speaks when this option is chosen */
   confirmationText: string;
   triggersRedFlag?: boolean;
 }
 
 export interface InterviewQuestion {
   id: string;
+  /** i18n key → question text (rendered + spoken) */
   text: string;
   options: InterviewOption[];
 }
@@ -23,62 +30,62 @@ export const interviewTree: Record<string, InterviewQuestion[]> = {
   chest: [
     {
       id: 'chest_onset',
-      text: 'When did this chest pain start?',
+      text: 'interview.q.chest_onset.text',
       options: [
-        { id: 'minutes', label: 'Just now / Minutes ago', icon: Zap, confirmationText: 'Got it. It started just now.', triggersRedFlag: true }, // RED FLAG
-        { id: 'hours', label: 'A few hours ago', icon: Clock, confirmationText: 'Understood. It started a few hours ago.' },
-        { id: 'days', label: 'A few days ago', icon: Calendar, confirmationText: 'Okay, started a few days ago.' },
-        { id: 'weeks', label: 'More than a week ago', icon: Calendar, confirmationText: 'Alright, it has been going on for a while.' },
+        { id: 'minutes', label: 'interview.o.chest_onset.minutes.label', icon: Zap, confirmationText: 'interview.o.chest_onset.minutes.confirm', triggersRedFlag: true }, // RED FLAG
+        { id: 'hours', label: 'interview.o.chest_onset.hours.label', icon: Clock, confirmationText: 'interview.o.chest_onset.hours.confirm' },
+        { id: 'days', label: 'interview.o.chest_onset.days.label', icon: Calendar, confirmationText: 'interview.o.chest_onset.days.confirm' },
+        { id: 'weeks', label: 'interview.o.chest_onset.weeks.label', icon: Calendar, confirmationText: 'interview.o.chest_onset.weeks.confirm' },
       ]
     },
     {
       id: 'chest_character',
-      text: 'What does the pain feel like?',
+      text: 'interview.q.chest_character.text',
       options: [
-        { id: 'crushing', label: 'Heavy / Crushing', icon: AlertOctagon, confirmationText: 'Got it, a heavy, crushing feeling.', triggersRedFlag: true }, // RED FLAG
-        { id: 'sharp', label: 'Sharp / Stabbing', icon: Zap, confirmationText: 'Okay, a sharp stabbing pain.' },
-        { id: 'burning', label: 'Burning', icon: Activity, confirmationText: 'Understood, a burning sensation.' },
-        { id: 'dull', label: 'Dull ache', icon: Frown, confirmationText: 'Alright, a dull ache.' },
+        { id: 'crushing', label: 'interview.o.chest_character.crushing.label', icon: AlertOctagon, confirmationText: 'interview.o.chest_character.crushing.confirm', triggersRedFlag: true }, // RED FLAG
+        { id: 'sharp', label: 'interview.o.chest_character.sharp.label', icon: Zap, confirmationText: 'interview.o.chest_character.sharp.confirm' },
+        { id: 'burning', label: 'interview.o.chest_character.burning.label', icon: Activity, confirmationText: 'interview.o.chest_character.burning.confirm' },
+        { id: 'dull', label: 'interview.o.chest_character.dull.label', icon: Frown, confirmationText: 'interview.o.chest_character.dull.confirm' },
       ]
     },
     {
       id: 'chest_severity',
-      text: 'How bad is the pain on a scale from mild to severe?',
+      text: 'interview.q.chest_severity.text',
       options: [
-        { id: 'mild', label: 'Mild, I can ignore it', icon: ActivitySquare, confirmationText: 'Got it. Mild pain.' },
-        { id: 'moderate', label: 'Moderate, it bothers me', icon: AlertTriangle, confirmationText: 'Okay, moderate pain.' },
-        { id: 'severe', label: 'Severe, very painful', icon: AlertOctagon, confirmationText: 'Understood. Severe pain.', triggersRedFlag: true }, // RED FLAG
+        { id: 'mild', label: 'interview.o.chest_severity.mild.label', icon: ActivitySquare, confirmationText: 'interview.o.chest_severity.mild.confirm' },
+        { id: 'moderate', label: 'interview.o.chest_severity.moderate.label', icon: AlertTriangle, confirmationText: 'interview.o.chest_severity.moderate.confirm' },
+        { id: 'severe', label: 'interview.o.chest_severity.severe.label', icon: AlertOctagon, confirmationText: 'interview.o.chest_severity.severe.confirm', triggersRedFlag: true }, // RED FLAG
       ]
     }
   ],
-  
+
   // Head / headache
   head: [
     {
       id: 'head_onset',
-      text: 'When did the head problem start?',
+      text: 'interview.q.head_onset.text',
       options: [
-        { id: 'today', label: 'Today', icon: Clock, confirmationText: 'Okay, it started today.' },
-        { id: 'days', label: 'A few days ago', icon: Calendar, confirmationText: 'Got it, a few days ago.' },
-        { id: 'weeks', label: 'Weeks or more', icon: Calendar, confirmationText: 'Alright, for a while now.' },
+        { id: 'today', label: 'interview.o.head_onset.today.label', icon: Clock, confirmationText: 'interview.o.head_onset.today.confirm' },
+        { id: 'days', label: 'interview.o.head_onset.days.label', icon: Calendar, confirmationText: 'interview.o.head_onset.days.confirm' },
+        { id: 'weeks', label: 'interview.o.head_onset.weeks.label', icon: Calendar, confirmationText: 'interview.o.head_onset.weeks.confirm' },
       ],
     },
     {
       id: 'head_severity',
-      text: 'How strong is the discomfort?',
+      text: 'interview.q.head_severity.text',
       options: [
-        { id: 'mild', label: 'Mild', icon: ActivitySquare, confirmationText: 'Okay, mild.' },
-        { id: 'moderate', label: 'Moderate', icon: AlertTriangle, confirmationText: 'Got it, moderate.' },
-        { id: 'severe', label: 'Severe', icon: AlertOctagon, confirmationText: 'Understood, severe.' },
+        { id: 'mild', label: 'interview.o.head_severity.mild.label', icon: ActivitySquare, confirmationText: 'interview.o.head_severity.mild.confirm' },
+        { id: 'moderate', label: 'interview.o.head_severity.moderate.label', icon: AlertTriangle, confirmationText: 'interview.o.head_severity.moderate.confirm' },
+        { id: 'severe', label: 'interview.o.head_severity.severe.label', icon: AlertOctagon, confirmationText: 'interview.o.head_severity.severe.confirm' },
       ],
     },
     {
       id: 'head_assoc',
-      text: 'Any of these along with it?',
+      text: 'interview.q.head_assoc.text',
       options: [
-        { id: 'nausea', label: 'Nausea / vomiting', icon: Frown, confirmationText: 'Noted, with nausea.' },
-        { id: 'vision', label: 'Blurred vision', icon: Zap, confirmationText: 'Noted, blurred vision.' },
-        { id: 'none', label: 'None of these', icon: HeartPulse, confirmationText: 'Okay, none of those.' },
+        { id: 'nausea', label: 'interview.o.head_assoc.nausea.label', icon: Frown, confirmationText: 'interview.o.head_assoc.nausea.confirm' },
+        { id: 'vision', label: 'interview.o.head_assoc.vision.label', icon: Zap, confirmationText: 'interview.o.head_assoc.vision.confirm' },
+        { id: 'none', label: 'interview.o.head_assoc.none.label', icon: HeartPulse, confirmationText: 'interview.o.head_assoc.none.confirm' },
       ],
     },
   ],
@@ -87,29 +94,29 @@ export const interviewTree: Record<string, InterviewQuestion[]> = {
   stomach: [
     {
       id: 'stomach_onset',
-      text: 'When did the stomach problem start?',
+      text: 'interview.q.stomach_onset.text',
       options: [
-        { id: 'today', label: 'Today', icon: Clock, confirmationText: 'Okay, today.' },
-        { id: 'days', label: 'A few days ago', icon: Calendar, confirmationText: 'Got it, a few days ago.' },
-        { id: 'weeks', label: 'Weeks or more', icon: Calendar, confirmationText: 'Alright, for a while.' },
+        { id: 'today', label: 'interview.o.stomach_onset.today.label', icon: Clock, confirmationText: 'interview.o.stomach_onset.today.confirm' },
+        { id: 'days', label: 'interview.o.stomach_onset.days.label', icon: Calendar, confirmationText: 'interview.o.stomach_onset.days.confirm' },
+        { id: 'weeks', label: 'interview.o.stomach_onset.weeks.label', icon: Calendar, confirmationText: 'interview.o.stomach_onset.weeks.confirm' },
       ],
     },
     {
       id: 'stomach_assoc',
-      text: 'Is any of this happening too?',
+      text: 'interview.q.stomach_assoc.text',
       options: [
-        { id: 'vomiting', label: 'Vomiting', icon: Frown, confirmationText: 'Noted, with vomiting.' },
-        { id: 'loose', label: 'Loose motions', icon: Activity, confirmationText: 'Noted, loose motions.' },
-        { id: 'none', label: 'None of these', icon: HeartPulse, confirmationText: 'Okay, none of those.' },
+        { id: 'vomiting', label: 'interview.o.stomach_assoc.vomiting.label', icon: Frown, confirmationText: 'interview.o.stomach_assoc.vomiting.confirm' },
+        { id: 'loose', label: 'interview.o.stomach_assoc.loose.label', icon: Activity, confirmationText: 'interview.o.stomach_assoc.loose.confirm' },
+        { id: 'none', label: 'interview.o.stomach_assoc.none.label', icon: HeartPulse, confirmationText: 'interview.o.stomach_assoc.none.confirm' },
       ],
     },
     {
       id: 'stomach_severity',
-      text: 'How bad is it right now?',
+      text: 'interview.q.stomach_severity.text',
       options: [
-        { id: 'mild', label: 'Mild', icon: ActivitySquare, confirmationText: 'Okay, mild.' },
-        { id: 'moderate', label: 'Moderate', icon: AlertTriangle, confirmationText: 'Got it, moderate.' },
-        { id: 'severe', label: 'Severe', icon: AlertOctagon, confirmationText: 'Understood, severe.' },
+        { id: 'mild', label: 'interview.o.stomach_severity.mild.label', icon: ActivitySquare, confirmationText: 'interview.o.stomach_severity.mild.confirm' },
+        { id: 'moderate', label: 'interview.o.stomach_severity.moderate.label', icon: AlertTriangle, confirmationText: 'interview.o.stomach_severity.moderate.confirm' },
+        { id: 'severe', label: 'interview.o.stomach_severity.severe.label', icon: AlertOctagon, confirmationText: 'interview.o.stomach_severity.severe.confirm' },
       ],
     },
   ],
@@ -118,29 +125,29 @@ export const interviewTree: Record<string, InterviewQuestion[]> = {
   joints: [
     {
       id: 'joints_onset',
-      text: 'When did the joint or limb problem start?',
+      text: 'interview.q.joints_onset.text',
       options: [
-        { id: 'today', label: 'Today', icon: Clock, confirmationText: 'Okay, today.' },
-        { id: 'days', label: 'A few days ago', icon: Calendar, confirmationText: 'Got it, a few days ago.' },
-        { id: 'weeks', label: 'Weeks or more', icon: Calendar, confirmationText: 'Alright, for a while.' },
+        { id: 'today', label: 'interview.o.joints_onset.today.label', icon: Clock, confirmationText: 'interview.o.joints_onset.today.confirm' },
+        { id: 'days', label: 'interview.o.joints_onset.days.label', icon: Calendar, confirmationText: 'interview.o.joints_onset.days.confirm' },
+        { id: 'weeks', label: 'interview.o.joints_onset.weeks.label', icon: Calendar, confirmationText: 'interview.o.joints_onset.weeks.confirm' },
       ],
     },
     {
       id: 'joints_pattern',
-      text: 'When is it worst?',
+      text: 'interview.q.joints_pattern.text',
       options: [
-        { id: 'morning', label: 'In the morning', icon: Clock, confirmationText: 'Noted, worse in the morning.' },
-        { id: 'movement', label: 'When I move it', icon: Activity, confirmationText: 'Noted, worse on movement.' },
-        { id: 'always', label: 'All the time', icon: AlertTriangle, confirmationText: 'Okay, constant.' },
+        { id: 'morning', label: 'interview.o.joints_pattern.morning.label', icon: Clock, confirmationText: 'interview.o.joints_pattern.morning.confirm' },
+        { id: 'movement', label: 'interview.o.joints_pattern.movement.label', icon: Activity, confirmationText: 'interview.o.joints_pattern.movement.confirm' },
+        { id: 'always', label: 'interview.o.joints_pattern.always.label', icon: AlertTriangle, confirmationText: 'interview.o.joints_pattern.always.confirm' },
       ],
     },
     {
       id: 'joints_severity',
-      text: 'How bad is the pain?',
+      text: 'interview.q.joints_severity.text',
       options: [
-        { id: 'mild', label: 'Mild', icon: ActivitySquare, confirmationText: 'Okay, mild.' },
-        { id: 'moderate', label: 'Moderate', icon: AlertTriangle, confirmationText: 'Got it, moderate.' },
-        { id: 'severe', label: 'Severe', icon: AlertOctagon, confirmationText: 'Understood, severe.' },
+        { id: 'mild', label: 'interview.o.joints_severity.mild.label', icon: ActivitySquare, confirmationText: 'interview.o.joints_severity.mild.confirm' },
+        { id: 'moderate', label: 'interview.o.joints_severity.moderate.label', icon: AlertTriangle, confirmationText: 'interview.o.joints_severity.moderate.confirm' },
+        { id: 'severe', label: 'interview.o.joints_severity.severe.label', icon: AlertOctagon, confirmationText: 'interview.o.joints_severity.severe.confirm' },
       ],
     },
   ],
@@ -149,20 +156,20 @@ export const interviewTree: Record<string, InterviewQuestion[]> = {
   general: [
     {
       id: 'general_onset',
-      text: 'When did you first notice this issue?',
+      text: 'interview.q.general_onset.text',
       options: [
-        { id: 'today', label: 'Today', icon: Clock, confirmationText: 'Got it, it started today.' },
-        { id: 'days', label: 'A few days ago', icon: Calendar, confirmationText: 'Okay, a few days ago.' },
-        { id: 'weeks', label: 'Weeks ago', icon: Calendar, confirmationText: 'Alright, weeks ago.' },
+        { id: 'today', label: 'interview.o.general_onset.today.label', icon: Clock, confirmationText: 'interview.o.general_onset.today.confirm' },
+        { id: 'days', label: 'interview.o.general_onset.days.label', icon: Calendar, confirmationText: 'interview.o.general_onset.days.confirm' },
+        { id: 'weeks', label: 'interview.o.general_onset.weeks.label', icon: Calendar, confirmationText: 'interview.o.general_onset.weeks.confirm' },
       ]
     },
     {
       id: 'general_severity',
-      text: 'Is it getting worse?',
+      text: 'interview.q.general_severity.text',
       options: [
-        { id: 'yes', label: 'Yes, getting worse', icon: AlertTriangle, confirmationText: 'Okay, it is getting worse.' },
-        { id: 'no', label: 'No, staying the same', icon: ActivitySquare, confirmationText: 'Got it, staying the same.' },
-        { id: 'better', label: 'It is getting better', icon: HeartPulse, confirmationText: 'That is good, it is getting better.' },
+        { id: 'yes', label: 'interview.o.general_severity.yes.label', icon: AlertTriangle, confirmationText: 'interview.o.general_severity.yes.confirm' },
+        { id: 'no', label: 'interview.o.general_severity.no.label', icon: ActivitySquare, confirmationText: 'interview.o.general_severity.no.confirm' },
+        { id: 'better', label: 'interview.o.general_severity.better.label', icon: HeartPulse, confirmationText: 'interview.o.general_severity.better.confirm' },
       ]
     }
   ]

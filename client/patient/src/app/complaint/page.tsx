@@ -8,70 +8,73 @@ import { useSessionStore } from '../../store/useSessionStore';
 import { BodyModelCanvas } from '../../components/BodyModel3D';
 import { useVoiceInput } from '../../lib/useVoiceInput';
 import { cn } from '../../components/LargeTouchButton';
+import { useT } from '../../i18n';
+import type { LucideIcon } from 'lucide-react';
 import {
   Zap, Waves, Anchor, Flame, Feather, RotateCw, Mic, X,
 } from 'lucide-react';
 
 /*
  * Zone -> interview-tree category + a short "how does it feel" drill-down.
+ * `titleKey` and each feel `labelKey` are i18n catalog keys resolved via t().
  * The feel answer is stored as a pre-answer so the interview can carry it.
  */
 const ZONE_CONFIG: Record<
   string,
-  { title: string; category: string; feels: { id: string; label: string; icon: any }[] }
+  { titleKey: string; category: string; feels: { id: string; labelKey: string; icon: LucideIcon }[] }
 > = {
   head: {
-    title: 'Your head',
+    titleKey: 'complaint.zone.head',
     category: 'head',
     feels: [
-      { id: 'throbbing', label: 'Throbbing', icon: Waves },
-      { id: 'pressure', label: 'Pressure', icon: Anchor },
-      { id: 'sharp', label: 'Sharp', icon: Zap },
+      { id: 'throbbing', labelKey: 'complaint.feel.throbbing', icon: Waves },
+      { id: 'pressure', labelKey: 'complaint.feel.pressure', icon: Anchor },
+      { id: 'sharp', labelKey: 'complaint.feel.sharp', icon: Zap },
     ],
   },
   chest: {
-    title: 'Your chest',
+    titleKey: 'complaint.zone.chest',
     category: 'chest',
     feels: [
-      { id: 'tightness', label: 'Tightness', icon: Anchor },
-      { id: 'sharp', label: 'Sharp pain', icon: Zap },
-      { id: 'burning', label: 'Burning', icon: Flame },
+      { id: 'tightness', labelKey: 'complaint.feel.tightness', icon: Anchor },
+      { id: 'sharp', labelKey: 'complaint.feel.sharpPain', icon: Zap },
+      { id: 'burning', labelKey: 'complaint.feel.burning', icon: Flame },
     ],
   },
   stomach: {
-    title: 'Your stomach',
+    titleKey: 'complaint.zone.stomach',
     category: 'stomach',
     feels: [
-      { id: 'cramping', label: 'Cramping', icon: Waves },
-      { id: 'burning', label: 'Burning', icon: Flame },
-      { id: 'dull', label: 'Dull ache', icon: Feather },
+      { id: 'cramping', labelKey: 'complaint.feel.cramping', icon: Waves },
+      { id: 'burning', labelKey: 'complaint.feel.burning', icon: Flame },
+      { id: 'dull', labelKey: 'complaint.feel.dull', icon: Feather },
     ],
   },
   back: {
-    title: 'Your back',
+    titleKey: 'complaint.zone.back',
     category: 'general',
     feels: [
-      { id: 'stiff', label: 'Stiff', icon: Anchor },
-      { id: 'sharp', label: 'Sharp', icon: Zap },
-      { id: 'dull', label: 'Dull ache', icon: Feather },
+      { id: 'stiff', labelKey: 'complaint.feel.stiff', icon: Anchor },
+      { id: 'sharp', labelKey: 'complaint.feel.sharp', icon: Zap },
+      { id: 'dull', labelKey: 'complaint.feel.dull', icon: Feather },
     ],
   },
   joints: {
-    title: 'Your arms & joints',
+    titleKey: 'complaint.zone.joints',
     category: 'joints',
     feels: [
-      { id: 'stiff', label: 'Stiff', icon: Anchor },
-      { id: 'swelling', label: 'Swollen', icon: Waves },
-      { id: 'sharp', label: 'Sharp', icon: Zap },
+      { id: 'stiff', labelKey: 'complaint.feel.stiff', icon: Anchor },
+      { id: 'swelling', labelKey: 'complaint.feel.swelling', icon: Waves },
+      { id: 'sharp', labelKey: 'complaint.feel.sharp', icon: Zap },
     ],
   },
   legs: {
-    title: 'Your legs',
+    titleKey: 'complaint.zone.legs',
     category: 'joints',
     feels: [
-      { id: 'weak', label: 'Weak', icon: Feather },
-      { id: 'swelling', label: 'Swollen', icon: Waves },
-      { id: 'cramping', label: 'Cramping', icon: Waves },
+      { id: 'weak', labelKey: 'complaint.feel.weak', icon: Feather },
+      { id: 'swelling', labelKey: 'complaint.feel.swelling', icon: Waves },
+      { id: 'cramping', labelKey: 'complaint.feel.cramping', icon: Waves },
     ],
   },
 };
@@ -81,17 +84,19 @@ export default function ComplaintScreen() {
   const { speak } = useAvatar();
   const { language, setChiefComplaint, updateHistoryAnswer } = useSessionStore();
   const { isListening, startListening } = useVoiceInput();
+  const { t } = useT();
 
   const [activeZone, setActiveZone] = useState<string | null>(null);
   const [rotateSignal, setRotateSignal] = useState(0);
 
   useEffect(() => {
-    speak('Where does it hurt? Touch the part of the body that bothers you, or tell me in your own words.', { language, gesture: 'point-right', stage: true });
+    speak(t('complaint.spoken.prompt'), { language, gesture: 'point-right', stage: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [speak, language]);
 
   const handleZone = (id: string) => {
     setActiveZone(id);
-    speak(`${ZONE_CONFIG[id].title}. How does it feel?`, { language, gesture: 'present', stage: true });
+    speak(t('complaint.spoken.zoneFeel', { zone: t(ZONE_CONFIG[id].titleKey) }), { language, gesture: 'present', stage: true });
   };
 
   const handleFeel = (feelId: string) => {
@@ -100,7 +105,7 @@ export default function ComplaintScreen() {
     setChiefComplaint(cfg.category);
     updateHistoryAnswer('reported_zone', activeZone);
     updateHistoryAnswer('reported_feel', feelId);
-    speak('Got it. I have a few quick questions about that.', language);
+    speak(t('complaint.spoken.gotIt'), language);
     router.push('/interview');
   };
 
@@ -110,8 +115,8 @@ export default function ComplaintScreen() {
     <div className="h-full flex flex-col">
       {/* prompt */}
       <div className="pb-3">
-        <h1 className="text-5xl font-extrabold text-ink tracking-tight">Where does it hurt?</h1>
-        <p className="text-2xl text-muted mt-1">Touch the part that bothers you, or tell me in your own words.</p>
+        <h1 className="text-5xl font-extrabold text-ink tracking-tight">{t('complaint.heading')}</h1>
+        <p className="text-2xl text-muted mt-1">{t('complaint.sub')}</p>
       </div>
 
       {/* body: 3D model + drill-down */}
@@ -121,14 +126,14 @@ export default function ComplaintScreen() {
           <BodyModelCanvas activeZone={activeZone} onSelectZone={handleZone} rotateSignal={rotateSignal} />
 
           <div className="absolute top-4 left-1/2 -translate-x-1/2 rounded-full bg-surface/90 backdrop-blur px-5 py-2 shadow-[var(--shadow-soft)] border border-hairline">
-            <span className="text-lg font-medium text-muted">Drag to turn. Tap a glowing spot.</span>
+            <span className="text-lg font-medium text-muted">{t('complaint.dragHint')}</span>
           </div>
 
           <button
             onClick={() => setRotateSignal((s) => s + 1)}
             className="absolute bottom-5 right-5 flex items-center gap-2 rounded-full bg-surface px-5 py-3 shadow-[var(--shadow-warm)] border border-hairline text-primary-deep font-semibold hover:bg-primary-soft transition-colors"
           >
-            <RotateCw size={24} /> Turn
+            <RotateCw size={24} /> {t('complaint.turn')}
           </button>
         </div>
 
@@ -144,12 +149,12 @@ export default function ComplaintScreen() {
                 className="flex flex-col h-full"
               >
                 <div className="flex items-center justify-between mb-1">
-                  <h2 className="text-3xl font-extrabold text-ink">{activeCfg.title}</h2>
-                  <button onClick={() => setActiveZone(null)} className="p-2 rounded-full text-muted hover:bg-surface-warm" aria-label="Close">
+                  <h2 className="text-3xl font-extrabold text-ink">{t(activeCfg.titleKey)}</h2>
+                  <button onClick={() => setActiveZone(null)} className="p-2 rounded-full text-muted hover:bg-surface-warm" aria-label={t('common.close')}>
                     <X size={28} />
                   </button>
                 </div>
-                <p className="text-xl text-muted mb-5">How does it feel?</p>
+                <p className="text-xl text-muted mb-5">{t('complaint.howFeel')}</p>
 
                 <div className="flex flex-col gap-4 flex-1">
                   {activeCfg.feels.map((f) => {
@@ -164,7 +169,7 @@ export default function ComplaintScreen() {
                         <div className="p-4 rounded-full bg-primary-soft text-primary">
                           <Icon size={34} />
                         </div>
-                        <span className="text-2xl font-semibold text-ink">{f.label}</span>
+                        <span className="text-2xl font-semibold text-ink">{t(f.labelKey)}</span>
                       </motion.button>
                     );
                   })}
@@ -179,22 +184,22 @@ export default function ComplaintScreen() {
                 className="flex flex-col h-full items-center justify-center text-center gap-6 rounded-[1.75rem] bg-surface-warm/70 border border-hairline p-8"
               >
                 <p className="text-2xl font-semibold text-ink leading-snug">
-                  Not sure where?<br />Tell me in your own words.
+                  {t('complaint.notSure')}<br />{t('complaint.tellWords')}
                 </p>
                 <motion.button
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => { startListening(); setChiefComplaint('voice_narration'); }}
+                  onClick={() => { startListening({ language, mode: 'transcribe' }); setChiefComplaint('voice_narration'); }}
                   className={cn(
                     'w-40 h-40 rounded-full flex flex-col items-center justify-center gap-2 shadow-[var(--shadow-warm)] transition-all',
                     isListening ? 'bg-primary text-white animate-pulse' : 'bg-surface text-primary border-4 border-primary/30',
                   )}
                 >
                   <Mic size={52} />
-                  <span className="text-lg font-semibold">{isListening ? 'Listening…' : 'Tap to speak'}</span>
+                  <span className="text-lg font-semibold">{isListening ? t('common.listening') : t('common.tapToSpeak')}</span>
                 </motion.button>
                 {isListening && (
                   <button onClick={() => router.push('/interview')} className="text-primary-deep font-semibold text-xl underline underline-offset-4">
-                    Done — continue
+                    {t('complaint.doneContinue')}
                   </button>
                 )}
               </motion.div>

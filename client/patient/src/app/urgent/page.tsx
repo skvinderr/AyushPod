@@ -7,16 +7,19 @@ import { useAvatar } from '../../store/useAvatar';
 import { useSessionStore } from '../../store/useSessionStore';
 import { LargeTouchButton } from '../../components/LargeTouchButton';
 import { AlertTriangle, ShieldAlert } from 'lucide-react';
+import { useT } from '../../i18n';
 
 export default function UrgentScreen() {
   const router = useRouter();
   const { speak, setState } = useAvatar();
   const { language } = useSessionStore();
+  const { t } = useT();
 
   useEffect(() => {
     // Aaya stays in her corner and turns concerned — no theatrics on the alert.
     setState('concerned');
-    speak('Based on your answers, please let a staff member know right away.', language);
+    speak(t('urgent.spoken'), language);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [speak, setState, language]);
 
   return (
@@ -33,15 +36,15 @@ export default function UrgentScreen() {
             <AlertTriangle size={96} />
           </div>
 
-          <h1 className="text-5xl font-extrabold text-coral tracking-tight">Please tell a staff member now</h1>
+          <h1 className="text-5xl font-extrabold text-coral tracking-tight">{t('urgent.heading')}</h1>
 
           <p className="text-2xl text-ink font-medium max-w-2xl">
-            Your symptoms need attention right away. Someone will help you — you don't have to wait in line.
+            {t('urgent.body')}
           </p>
 
           <LargeTouchButton onClick={() => router.push('/scan')} className="w-full mt-4 py-6 bg-ink text-white hover:bg-ink/90 border-none">
             <ShieldAlert size={34} className="mr-3" />
-            <span className="text-2xl">I've told a staff member</span>
+            <span className="text-2xl">{t('urgent.told')}</span>
           </LargeTouchButton>
         </div>
       </motion.div>

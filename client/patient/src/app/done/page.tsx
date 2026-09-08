@@ -6,11 +6,13 @@ import { useRouter } from 'next/navigation';
 import { useAvatar } from '../../store/useAvatar';
 import { useSessionStore } from '../../store/useSessionStore';
 import { QrCode, CheckCircle2, ShieldCheck, ArrowRight, MapPin, Clock } from 'lucide-react';
+import { useT } from '../../i18n';
 
 export default function DoneScreen() {
   const router = useRouter();
   const { speak, setState } = useAvatar();
   const { language, resetSession } = useSessionStore();
+  const { t } = useT();
 
   const [dataCleared, setDataCleared] = useState(false);
 
@@ -26,15 +28,16 @@ export default function DoneScreen() {
 
   useEffect(() => {
     setState('happy');
-    speak('Thank you. Your doctor will have this ready when you go in.', { language, gesture: 'wave', stage: true });
+    speak(t('done.spoken.thanks'), { language, gesture: 'wave', stage: true });
 
     const timer = setTimeout(() => {
       resetSession();
       setDataCleared(true);
-      speak('Your session data has been securely cleared.', language);
+      speak(t('done.spoken.cleared'), language);
     }, 8000);
 
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [speak, language, resetSession, setState]);
 
   return (
@@ -49,13 +52,13 @@ export default function DoneScreen() {
         <div className="flex-1 p-10 flex flex-col justify-center">
           <div className="flex items-center gap-2.5 text-primary-deep font-bold text-xl mb-4">
             <CheckCircle2 size={28} />
-            <span>Registration successful</span>
+            <span>{t('done.registered')}</span>
           </div>
 
-          <h1 className="text-5xl font-extrabold text-ink tracking-tight leading-tight">You're all set for your visit</h1>
+          <h1 className="text-5xl font-extrabold text-ink tracking-tight leading-tight">{t('done.heading')}</h1>
 
           <div className="mt-8">
-            <span className="text-xl font-semibold text-muted">Your token number</span>
+            <span className="text-xl font-semibold text-muted">{t('done.tokenLabel')}</span>
             <div className="text-8xl font-extrabold text-primary-deep leading-none mt-1">
               {token || <span className="opacity-25">A-···</span>}
             </div>
@@ -67,8 +70,8 @@ export default function DoneScreen() {
                 <Clock size={22} />
               </div>
               <div className="flex flex-col">
-                <span className="text-sm font-semibold text-muted">Estimated wait</span>
-                <span className="text-xl font-bold text-primary">~12 mins</span>
+                <span className="text-sm font-semibold text-muted">{t('done.waitLabel')}</span>
+                <span className="text-xl font-bold text-primary">{t('done.waitValue')}</span>
               </div>
             </div>
             <div className="flex items-center gap-3 bg-surface-warm px-5 py-4 rounded-2xl border border-hairline">

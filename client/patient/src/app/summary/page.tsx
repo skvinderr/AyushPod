@@ -8,12 +8,14 @@ import { useSessionStore } from '../../store/useSessionStore';
 import { interviewTree } from '../../lib/interviewTree';
 import { LargeTouchButton } from '../../components/LargeTouchButton';
 import { CheckCircle2, Edit3, ArrowRight, UserCircle, ActivitySquare, FileText, Check } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { cn } from '../../components/LargeTouchButton';
+import { useT } from '../../i18n';
 
 interface Section {
   id: string;
   title: string;
-  icon: any;
+  icon: LucideIcon;
   content: React.ReactNode;
   spokenText: string;
   editRoute: string;
@@ -23,74 +25,82 @@ export default function SummaryScreen() {
   const router = useRouter();
   const { speak } = useAvatar();
   const { language, chiefComplaint, historyAnswers } = useSessionStore();
+  const { t } = useT();
 
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const [confirmedSections, setConfirmedSections] = useState<Record<string, boolean>>({});
 
-  const formatHPI = () => {
-    if (!chiefComplaint || chiefComplaint === 'voice_narration') return 'User described symptoms via voice recording.';
+  // Complaint label in the active language. The stored value is a category id
+  // ("chest", "voice_narration", …); we key it back through the zone catalog.
+  const complaintLabel = !chiefComplaint
+    ? t('summary.notSpecified')
+    : chiefComplaint === 'voice_narration'
+      ? t('summary.viaVoice')
+      : t(`complaint.zone.${chiefComplaint}`);
+
+  // Build the answered-questions list, translating each question + option key.
+  const hpiRows = (): { q: string; a: string }[] => {
+    if (!chiefComplaint || chiefComplaint === 'voice_narration') return [];
     const questions = interviewTree[chiefComplaint] || interviewTree['general'];
-    let text = '';
+    const rows: { q: string; a: string }[] = [];
     Object.entries(historyAnswers).forEach(([qId, optionId]) => {
       const q = questions.find((q) => q.id === qId);
-      if (q) {
-        const opt = q.options.find((o) => o.id === optionId);
-        if (opt) {
-          text += `${q.text.replace('?', '')}: ${opt.label}\n`;
-        }
+      const opt = q?.options.find((o) => o.id === optionId);
+      if (q && opt) {
+        rows.push({ q: t(q.text).replace('?', ''), a: t(opt.label) });
       }
     });
-    return text || 'No specific details provided.';
+    return rows;
   };
+
+  const rows = hpiRows();
 
   const sections: Section[] = [
     {
       id: 'complaint',
-      title: 'Your main concern',
+      title: t('summary.section.complaint'),
       icon: UserCircle,
       content: (
         <div className="flex flex-col gap-1">
-          <span className="text-base font-semibold text-muted">Complaint</span>
-          <span className="text-3xl font-bold text-ink capitalize">{chiefComplaint ? chiefComplaint.replace('_', ' ') : 'Not specified'}</span>
+          <span className="text-base font-semibold text-muted">{t('summary.label.complaint')}</span>
+          <span className="text-3xl font-bold text-ink">{complaintLabel}</span>
         </div>
       ),
-      spokenText: `Your main reason for visiting today is: ${chiefComplaint ? chiefComplaint.replace('_', ' ') : 'Not specified'}.`,
+      spokenText: t('summary.spoken.complaint', { complaint: complaintLabel }),
       editRoute: '/complaint',
     },
     {
       id: 'hpi',
-      title: 'Your answers',
+      title: t('summary.section.hpi'),
       icon: ActivitySquare,
       content: (
         <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-          {formatHPI()
-            .split('\n')
-            .filter(Boolean)
-            .map((line, i) => {
-              const [q, a] = line.split(':');
-              return (
-                <div key={i} className="flex flex-col gap-0.5">
-                  <span className="text-base font-semibold text-muted">{q}</span>
-                  <span className="text-xl font-bold text-ink">{a}</span>
-                </div>
-              );
-            })}
+          {rows.length > 0 ? (
+            rows.map((row, i) => (
+              <div key={i} className="flex flex-col gap-0.5">
+                <span className="text-base font-semibold text-muted">{row.q}</span>
+                <span className="text-xl font-bold text-ink">{row.a}</span>
+              </div>
+            ))
+          ) : (
+            <span className="text-xl font-bold text-ink">{t('summary.viaVoice')}</span>
+          )}
         </div>
       ),
-      spokenText: 'You answered the medical history questions.',
+      spokenText: t('summary.spoken.hpi'),
       editRoute: '/interview',
     },
     {
       id: 'documents',
-      title: 'Your documents',
+      title: t('summary.section.documents'),
       icon: FileText,
       content: (
         <div className="flex flex-col gap-1">
-          <span className="text-base font-semibold text-muted">Attached</span>
-          <span className="text-2xl font-bold text-ink">1 document (Blood report)</span>
+          <span className="text-base font-semibold text-muted">{t('summary.label.attached')}</span>
+          <span className="text-2xl font-bold text-ink">{t('summary.documentsValue')}</span>
         </div>
       ),
-      spokenText: 'You have attached 1 document for the doctor to review.',
+      spokenText: t('summary.spoken.documents'),
       editRoute: '/scan',
     },
   ];
@@ -99,8 +109,9 @@ export default function SummaryScreen() {
     if (activeSectionIndex < sections.length) {
       speak(sections[activeSectionIndex].spokenText, { language, gesture: 'present', stage: true });
     } else {
-      speak('Great. If everything looks correct, please confirm and submit.', { language, gesture: 'present', stage: true });
+      speak(t('summary.spoken.confirm'), { language, gesture: 'present', stage: true });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSectionIndex, speak, language]);
 
   const handleConfirm = (sectionId: string) => {
@@ -111,7 +122,7 @@ export default function SummaryScreen() {
   };
 
   const handleFix = (route: string) => {
-    speak("Okay, let's fix that.", language);
+    speak(t('summary.spoken.fix'), language);
     router.push(route);
   };
 
@@ -121,8 +132,8 @@ export default function SummaryScreen() {
     <div className="h-full flex flex-col">
       {/* prompt */}
       <div className="pb-3">
-        <h1 className="text-5xl font-extrabold text-ink tracking-tight">Let's check it together</h1>
-        <p className="text-2xl text-muted mt-1">Confirm each part. Tap edit to change anything.</p>
+        <h1 className="text-5xl font-extrabold text-ink tracking-tight">{t('summary.heading')}</h1>
+        <p className="text-2xl text-muted mt-1">{t('summary.sub')}</p>
       </div>
 
       {/* sections */}
@@ -154,7 +165,7 @@ export default function SummaryScreen() {
 
                 {(isActive || isConfirmed) && (
                   <button onClick={() => handleFix(section.editRoute)} className="flex items-center gap-2 text-primary font-semibold text-lg hover:underline">
-                    <Edit3 size={18} /> Edit
+                    <Edit3 size={18} /> {t('summary.edit')}
                   </button>
                 )}
               </div>
@@ -166,7 +177,7 @@ export default function SummaryScreen() {
                   <div className="flex justify-end">
                     <LargeTouchButton onClick={() => handleConfirm(section.id)} className="py-3.5 px-10">
                       <Check size={26} className="mr-2" />
-                      <span className="text-xl font-semibold">Yes, correct</span>
+                      <span className="text-xl font-semibold">{t('summary.yesCorrect')}</span>
                     </LargeTouchButton>
                   </div>
                 )}
@@ -181,7 +192,7 @@ export default function SummaryScreen() {
         {allConfirmed && (
           <motion.div initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="pt-4">
             <LargeTouchButton onClick={() => router.push('/done')} className="w-full py-6">
-              <span className="text-3xl font-bold">Send my file to the doctor</span>
+              <span className="text-3xl font-bold">{t('summary.send')}</span>
               <ArrowRight size={34} className="ml-3" />
             </LargeTouchButton>
           </motion.div>
