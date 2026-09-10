@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         text: text,
         language_code: language_code,
-        speaker: 'shreya', // Or 'shubh'
+        speaker: 'shreya',
         model: 'bulbul:v3',
         pace: 1.0,
         target_sample_rate: 24000
