@@ -6,61 +6,57 @@ import { useAvatar } from '../store/useAvatar';
 import { useSessionStore } from '../store/useSessionStore';
 import { useVoiceInput } from '../lib/useVoiceInput';
 import { LargeTouchButton } from '../components/LargeTouchButton';
-import { Mic, ArrowRight, Check } from 'lucide-react';
+import { Stethoscope, Mic, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../components/LargeTouchButton';
-import { useT, translate } from '../i18n';
-import { LANGUAGES, LIVE_LANGS, fromBcp47, type LangId } from '../i18n/languages';
+
+// Language data
+const LANGUAGES = [
+  { id: 'hi', native: 'हिंदी', english: 'Hindi', flag: '🇮🇳', greeting: 'नमस्ते, आपका स्वागत है!' },
+  { id: 'en', native: 'English', english: 'English', flag: '🇬🇧', greeting: 'Welcome to MediKiosk!' },
+  { id: 'bn', native: 'বাংলা', english: 'Bengali', flag: '🇮🇳', greeting: 'নমস্কার, আপনাকে স্বাগত!' },
+  { id: 'ta', native: 'தமிழ்', english: 'Tamil', flag: '🇮🇳', greeting: 'வணக்கம், நல்வரவு!' },
+  { id: 'mr', native: 'मराठी', english: 'Marathi', flag: '🇮🇳', greeting: 'नमस्कार, आपले स्वागत आहे!' },
+];
 
 export default function WelcomeScreen() {
   const router = useRouter();
   const { speak } = useAvatar();
   const { language, setLanguage } = useSessionStore();
   const { isListening, startListening } = useVoiceInput();
-  const { t } = useT();
-
+  
   const [hasSelected, setHasSelected] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout>(null);
 
   useEffect(() => {
+    // Speak on mount after a short delay
     const timeout = setTimeout(() => {
-      speak(translate('en', 'welcome.spoken.greeting'), { gesture: 'welcome', stage: true });
-    }, 700);
+      speak("Namaste! Welcome!");
+    }, 800);
     return () => clearTimeout(timeout);
   }, [speak]);
 
+  // Clean up auto-advance timeout if unmounted
   useEffect(() => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
 
-  const commitLanguage = (langId: LangId) => {
+  const handleLanguageSelect = (langId: string, greeting: string) => {
     setLanguage(langId);
     setHasSelected(true);
-    // Speak the greeting in the just-chosen language. `translate(langId, …)`
-    // reads that catalog directly (the store update hasn't propagated yet).
-    speak(translate(langId, 'welcome.spoken.greeting'), {
-      language: langId,
-      gesture: 'wave',
-      stage: true,
-    });
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => router.push('/consent'), 3200);
-  };
+    
+    // Avatar speaks the language-specific greeting
+    speak(greeting, langId);
 
-  // Welcome always auto-detects the spoken language, then switches the UI to it.
-  const handleVoice = () => {
-    startListening({
-      language: 'unknown',
-      mode: 'transcribe',
-      onResult: ({ languageCode }) => {
-        const detected = languageCode ? fromBcp47(languageCode) : null;
-        // Fall back to Hindi if we detect an Indic language we don't yet host.
-        const target: LangId = detected && LIVE_LANGS.includes(detected) ? detected : 'hi';
-        commitLanguage(target);
-      },
-    });
+    // Cancel any existing timeout
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+    // Auto-advance after 3.5 seconds
+    timeoutRef.current = setTimeout(() => {
+      router.push('/consent');
+    }, 3500);
   };
 
   const handleNextClick = () => {
@@ -69,91 +65,107 @@ export default function WelcomeScreen() {
   };
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Hero heading */}
-      <motion.div
-        initial={{ opacity: 0, y: -14 }}
+    <div className="absolute inset-0 flex flex-col pt-12 pb-8 px-12 overflow-hidden">
+      
+      {/* Header / Logo */}
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="pt-1 pb-2"
+        className="flex items-center justify-center gap-4 mb-16"
       >
-        <p className="text-xl font-semibold text-primary-deep">{t('welcome.kicker')}</p>
-        <h1 className="text-6xl font-extrabold text-ink tracking-tight mt-1">{t('welcome.chooseLanguage')}</h1>
-        <p className="text-2xl text-muted mt-2">{t('welcome.chooseLanguageSub')}</p>
+        <div className="bg-primary text-white p-4 rounded-2xl shadow-lg">
+          <Stethoscope size={48} />
+        </div>
+        <h1 className="text-6xl font-extrabold text-ink tracking-tight">MediKiosk</h1>
       </motion.div>
 
-      {/* Language grid + voice */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-8">
-        <div className="flex flex-wrap justify-center gap-6 max-w-[860px]">
-          {LANGUAGES.map((lang, i) => {
-            const active = language === lang.id && hasSelected;
-            return (
-              <motion.button
-                key={lang.id}
-                initial={{ opacity: 0, y: 22 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 + i * 0.07, type: 'spring', stiffness: 220, damping: 20 }}
-                whileHover={{ y: -6 }}
-                whileTap={{ scale: 0.96 }}
-                onClick={() => commitLanguage(lang.id)}
-                className={cn(
-                  'relative flex flex-col items-center justify-center w-[188px] h-[196px] gap-3 rounded-[2rem] bg-surface transition-shadow duration-300 outline-none focus-visible:ring-8 focus-visible:ring-primary/30',
-                  active
-                    ? 'ring-4 ring-primary shadow-[var(--card-pop)]'
-                    : 'border border-hairline shadow-[var(--shadow-soft)] hover:shadow-[var(--card-lift)]',
-                )}
-              >
-                {active && (
-                  <div className="absolute top-3 right-3 bg-primary text-white rounded-full p-1.5">
-                    <Check size={20} strokeWidth={3} />
-                  </div>
-                )}
-                <div
-                  className={cn(
-                    'grid place-items-center w-[70px] h-[70px] rounded-full text-4xl font-bold transition-colors',
-                    active ? 'bg-primary text-white' : 'bg-primary-soft text-primary-deep',
-                  )}
-                >
-                  {lang.glyph}
-                </div>
-                <span className="text-3xl font-bold text-ink leading-none">{lang.native}</span>
-                {lang.id !== 'en' && <span className="text-base font-medium text-muted">{lang.english}</span>}
-              </motion.button>
-            );
-          })}
-        </div>
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col items-center max-w-5xl mx-auto w-full z-10">
+        
+        {/* Language Grid */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="flex flex-wrap justify-center gap-8 mb-16"
+        >
+          {LANGUAGES.map((lang) => (
+            <motion.button
+              key={lang.id}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => handleLanguageSelect(lang.id, lang.greeting)}
+              className={cn(
+                "flex flex-col items-center justify-center p-8 rounded-[2rem] w-56 h-56 gap-4 transition-all duration-300",
+                "bg-surface outline-none border-2 border-hairline focus-visible:ring-8 focus-visible:ring-primary/40",
+                language === lang.id && hasSelected
+                  ? "shadow-[var(--shadow-warm)] ring-4 ring-primary border-primary scale-105"
+                  : "shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-warm)]"
+              )}
+            >
+              <span className="text-5xl">{lang.flag}</span>
+              <span className={cn(
+                "text-4xl font-bold",
+                language === lang.id && hasSelected ? "text-primary" : "text-ink"
+              )}>
+                {lang.native}
+              </span>
+              {lang.id !== 'en' && (
+                <span className="text-xl font-medium text-ink/60">
+                  {lang.english}
+                </span>
+              )}
+            </motion.button>
+          ))}
+        </motion.div>
 
-        <div className="h-24 flex items-center justify-center">
-          <AnimatePresence mode="wait">
+        {/* Voice Input Hint & Manual Next Button Container */}
+        <div className="mt-auto w-full h-32 flex items-center justify-center relative">
+          
+          <AnimatePresence>
             {!hasSelected ? (
               <motion.button
                 key="voice-hint"
-                initial={{ opacity: 0, y: 16 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                onClick={handleVoice}
+                exit={{ opacity: 0, scale: 0.9 }}
+                onClick={startListening}
                 className={cn(
-                  'flex items-center gap-5 px-9 py-5 rounded-full bg-surface shadow-[var(--shadow-soft)] border border-hairline transition-all',
-                  isListening ? 'ring-4 ring-primary border-primary' : '',
+                  "flex items-center gap-6 px-10 py-6 rounded-full bg-surface/80 backdrop-blur-md shadow-[var(--shadow-soft)] border-2 border-hairline",
+                  "transition-all duration-300",
+                  isListening ? "ring-4 ring-primary border-primary" : ""
                 )}
               >
-                <div className={cn('p-3.5 rounded-full', isListening ? 'animate-pulse bg-primary text-white' : 'bg-primary-soft text-primary')}>
-                  <Mic size={28} />
+                <div className={cn(
+                  "p-4 rounded-full text-primary",
+                  isListening ? "animate-pulse bg-primary text-white" : "bg-primary-soft"
+                )}>
+                  <Mic size={32} />
                 </div>
                 <span className="text-2xl font-semibold text-ink">
-                  {isListening ? t('common.listening') : t('welcome.sayLanguage')}
+                  {isListening ? "Listening..." : "Tap a language or say it aloud"}
                 </span>
               </motion.button>
             ) : (
-              <motion.div key="next-btn" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-5">
-                <span className="text-xl font-medium text-muted">{t('welcome.startingAuto')}</span>
-                <LargeTouchButton onClick={handleNextClick}>
-                  <span className="text-2xl">{t('common.next')}</span>
-                  <ArrowRight size={30} className="ml-2" />
+              <motion.div
+                key="next-btn"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-6"
+              >
+                <span className="text-2xl font-medium text-ink/60 px-6 py-3 rounded-full animate-pulse">
+                  Continuing automatically...
+                </span>
+                <LargeTouchButton 
+                  onClick={handleNextClick} 
+                >
+                  <span className="text-3xl">Next</span>
+                  <ArrowRight size={36} />
                 </LargeTouchButton>
               </motion.div>
             )}
           </AnimatePresence>
+          
         </div>
       </div>
     </div>

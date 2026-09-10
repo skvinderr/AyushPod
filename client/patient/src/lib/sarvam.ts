@@ -7,8 +7,8 @@
 const SARVAM_BASE = 'https://api.sarvam.ai';
 
 // Warm female v3 voice for Aaya. Bulbul v3 speakers differ from v2
-// (anushka/vidya are v2). "manisha" is a natural warm female v3 voice.
-const AAYA_SPEAKER = 'manisha';
+// (anushka/vidya are v2). "ritu" is a natural warm female v3 voice.
+const AAYA_SPEAKER = 'ritu';
 
 function getKey(): string {
   const key = process.env.SARVAM_API_KEY;
@@ -39,7 +39,7 @@ export async function synthesizeSpeech(
     },
     body: JSON.stringify({
       text: text.slice(0, 2500),
-      target_language_code: languageCode,
+      language_code: languageCode,
       model: 'bulbul:v3',
       speaker: AAYA_SPEAKER,
       pace: 0.95,
