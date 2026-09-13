@@ -114,49 +114,49 @@ export default function ComplaintScreen() {
   return (
     <div className="h-full flex flex-col">
       {/* prompt */}
-      <div className="pb-3">
-        <h1 className="text-5xl font-extrabold text-ink tracking-tight">{t('complaint.heading')}</h1>
-        <p className="text-2xl text-muted mt-1">{t('complaint.sub')}</p>
+      <div className="pb-2 shrink-0">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-ink tracking-tight">{t('complaint.heading')}</h1>
+        <p className="text-sm sm:text-base text-muted mt-0.5">{t('complaint.sub')}</p>
       </div>
 
       {/* body: 3D model + drill-down */}
-      <div className="flex-1 min-h-0 flex gap-5">
+      <div className="flex-1 min-h-0 flex gap-4">
         {/* 3D body — the focal, elevated surface */}
-        <div className="relative flex-1 rounded-[1.75rem] bg-gradient-to-b from-primary-soft/70 via-surface to-surface-warm overflow-hidden border border-hairline shadow-[var(--card-lift)]">
+        <div className="relative flex-1 rounded-2xl bg-gradient-to-b from-primary-soft/70 via-surface to-surface-warm overflow-hidden border border-hairline shadow-sm">
           <BodyModelCanvas activeZone={activeZone} onSelectZone={handleZone} rotateSignal={rotateSignal} />
 
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 rounded-full bg-surface/90 backdrop-blur px-5 py-2 shadow-[var(--shadow-soft)] border border-hairline">
-            <span className="text-lg font-medium text-muted">{t('complaint.dragHint')}</span>
+          <div className="absolute top-3 left-3 sm:left-4 rounded-full bg-surface/90 backdrop-blur px-3.5 py-1.5 shadow-xs border border-hairline pointer-events-none z-10">
+            <span className="text-xs sm:text-sm font-medium text-muted">{t('complaint.dragHint')}</span>
           </div>
 
           <button
             onClick={() => setRotateSignal((s) => s + 1)}
-            className="absolute bottom-5 right-5 flex items-center gap-2 rounded-full bg-surface px-5 py-3 shadow-[var(--shadow-warm)] border border-hairline text-primary-deep font-semibold hover:bg-primary-soft transition-colors"
+            className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-surface px-4 py-2 shadow-sm border border-hairline text-primary-deep text-xs sm:text-sm font-semibold hover:bg-primary-soft transition-colors"
           >
-            <RotateCw size={24} /> {t('complaint.turn')}
+            <RotateCw size={18} /> {t('complaint.turn')}
           </button>
         </div>
 
         {/* Right rail: drill-down OR voice prompt */}
-        <div className="w-[320px] shrink-0 flex flex-col">
+        <div className="w-[260px] sm:w-[280px] shrink-0 flex flex-col">
           <AnimatePresence mode="wait">
             {activeCfg ? (
               <motion.div
                 key={activeZone}
-                initial={{ opacity: 0, x: 24 }}
+                initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -24 }}
+                exit={{ opacity: 0, x: -20 }}
                 className="flex flex-col h-full"
               >
                 <div className="flex items-center justify-between mb-1">
-                  <h2 className="text-3xl font-extrabold text-ink">{t(activeCfg.titleKey)}</h2>
-                  <button onClick={() => setActiveZone(null)} className="p-2 rounded-full text-muted hover:bg-surface-warm" aria-label={t('common.close')}>
-                    <X size={28} />
+                  <h2 className="text-xl sm:text-2xl font-bold text-ink">{t(activeCfg.titleKey)}</h2>
+                  <button onClick={() => setActiveZone(null)} className="p-1.5 rounded-full text-muted hover:bg-surface-warm" aria-label={t('common.close')}>
+                    <X size={20} />
                   </button>
                 </div>
-                <p className="text-xl text-muted mb-5">{t('complaint.howFeel')}</p>
+                <p className="text-xs sm:text-sm text-muted mb-3">{t('complaint.howFeel')}</p>
 
-                <div className="flex flex-col gap-4 flex-1">
+                <div className="flex flex-col gap-2.5 flex-1 overflow-y-auto">
                   {activeCfg.feels.map((f) => {
                     const Icon = f.icon;
                     return (
@@ -164,12 +164,12 @@ export default function ComplaintScreen() {
                         key={f.id}
                         whileTap={{ scale: 0.97 }}
                         onClick={() => handleFeel(f.id)}
-                        className="flex items-center gap-5 p-5 rounded-[1.25rem] bg-surface border-2 border-hairline hover:border-primary hover:bg-primary-soft transition-all min-h-[96px] text-left"
+                        className="flex items-center gap-3.5 p-3 rounded-2xl bg-surface border-2 border-hairline hover:border-primary hover:bg-primary-soft transition-all min-h-[64px] text-left"
                       >
-                        <div className="p-4 rounded-full bg-primary-soft text-primary">
-                          <Icon size={34} />
+                        <div className="p-2.5 rounded-xl bg-primary-soft text-primary shrink-0">
+                          <Icon size={22} />
                         </div>
-                        <span className="text-2xl font-semibold text-ink">{t(f.labelKey)}</span>
+                        <span className="text-base font-semibold text-ink leading-tight">{t(f.labelKey)}</span>
                       </motion.button>
                     );
                   })}
@@ -181,24 +181,24 @@ export default function ComplaintScreen() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="flex flex-col h-full items-center justify-center text-center gap-6 rounded-[1.75rem] bg-surface-warm/70 border border-hairline p-8"
+                className="flex flex-col h-full items-center justify-center text-center gap-4 rounded-2xl bg-surface-warm/70 border border-hairline p-5"
               >
-                <p className="text-2xl font-semibold text-ink leading-snug">
+                <p className="text-base font-semibold text-ink leading-snug">
                   {t('complaint.notSure')}<br />{t('complaint.tellWords')}
                 </p>
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   onClick={() => { startListening({ language, mode: 'transcribe' }); setChiefComplaint('voice_narration'); }}
                   className={cn(
-                    'w-40 h-40 rounded-full flex flex-col items-center justify-center gap-2 shadow-[var(--shadow-warm)] transition-all',
-                    isListening ? 'bg-primary text-white animate-pulse' : 'bg-surface text-primary border-4 border-primary/30',
+                    'w-28 h-28 rounded-full flex flex-col items-center justify-center gap-1.5 shadow-sm transition-all',
+                    isListening ? 'bg-primary text-white animate-pulse' : 'bg-surface text-primary border-3 border-primary/30',
                   )}
                 >
-                  <Mic size={52} />
-                  <span className="text-lg font-semibold">{isListening ? t('common.listening') : t('common.tapToSpeak')}</span>
+                  <Mic size={34} />
+                  <span className="text-xs font-semibold">{isListening ? t('common.listening') : t('common.tapToSpeak')}</span>
                 </motion.button>
                 {isListening && (
-                  <button onClick={() => router.push('/interview')} className="text-primary-deep font-semibold text-xl underline underline-offset-4">
+                  <button onClick={() => router.push('/interview')} className="text-primary-deep font-semibold text-sm underline underline-offset-4">
                     {t('complaint.doneContinue')}
                   </button>
                 )}

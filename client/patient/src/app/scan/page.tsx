@@ -186,9 +186,9 @@ export default function ScanScreen() {
   return (
     <div className="relative h-full flex flex-col">
       {/* prompt */}
-      <div className="pb-3">
-        <h1 className="text-5xl font-extrabold text-ink tracking-tight">{t('scan.heading')}</h1>
-        <p className="text-2xl text-muted mt-1">{t('scan.sub')}</p>
+      <div className="pb-2 shrink-0">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-ink tracking-tight">{t('scan.heading')}</h1>
+        <p className="text-sm sm:text-base text-muted mt-0.5">{t('scan.sub')}</p>
       </div>
 
       <div className="relative flex-1 min-h-0">
@@ -200,21 +200,21 @@ export default function ScanScreen() {
               initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
-              className="h-full flex flex-col items-center justify-center gap-9"
+              className="h-full flex flex-col items-center justify-center gap-6"
             >
-              <div className="flex gap-7">
-                <IconTile icon={Camera} label={t('scan.camera')} onClick={startCamera} className="w-72 h-72" />
-                <IconTile icon={ImagePlus} label={t('scan.upload')} onClick={() => fileInputRef.current?.click()} className="w-72 h-72" />
+              <div className="flex gap-5">
+                <IconTile icon={Camera} label={t('scan.camera')} onClick={startCamera} className="w-40 h-40 sm:w-48 sm:h-48" />
+                <IconTile icon={ImagePlus} label={t('scan.upload')} onClick={() => fileInputRef.current?.click()} className="w-40 h-40 sm:w-48 sm:h-48" />
                 <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" className="hidden" />
               </div>
 
               <LargeTouchButton
                 onClick={() => router.push('/summary')}
                 variant={docs.length > 0 ? 'primary' : 'outline'}
-                className="w-[34rem] py-5"
+                className="w-full max-w-sm py-2.5 min-h-[44px] text-base"
               >
-                <span className="text-2xl">{docs.length > 0 ? t('scan.doneScanning') : t('scan.noDocuments')}</span>
-                <ArrowRight size={30} className="ml-2" />
+                <span>{docs.length > 0 ? t('scan.doneScanning') : t('scan.noDocuments')}</span>
+                <ArrowRight size={20} className="ml-1.5" />
               </LargeTouchButton>
             </motion.div>
           )}
@@ -226,58 +226,58 @@ export default function ScanScreen() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 flex flex-col items-center gap-4 z-20 bg-ink rounded-[1.75rem] overflow-hidden p-5"
+              className="absolute inset-0 flex flex-col items-center gap-3 z-20 bg-ink rounded-2xl overflow-hidden p-3"
             >
-              <div className="relative w-full flex-1 rounded-[1.25rem] overflow-hidden bg-black flex items-center justify-center">
+              <div className="relative w-full flex-1 rounded-xl overflow-hidden bg-black flex items-center justify-center">
                 <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover" />
-                <div className="absolute inset-8 border-4 border-white/50 rounded-2xl pointer-events-none" />
+                <div className="absolute inset-6 border-2 border-white/50 rounded-xl pointer-events-none" />
 
                 {qualityWarning && (
-                  <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-coral text-white px-7 py-3.5 rounded-full text-xl font-bold flex items-center gap-3">
-                    <X size={28} />
+                  <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-coral text-white px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2">
+                    <X size={18} />
                     {qualityWarning}
                   </div>
                 )}
               </div>
 
-              <div className="flex w-full justify-between items-center px-10 pb-2 pt-1">
-                <button onClick={() => { stopCamera(); setStep('select'); }} className="text-white bg-white/20 p-5 rounded-full hover:bg-white/30">
-                  <X size={34} />
+              <div className="flex w-full justify-between items-center px-6 pb-1 pt-1">
+                <button onClick={() => { stopCamera(); setStep('select'); }} className="text-white bg-white/20 p-3 rounded-full hover:bg-white/30">
+                  <X size={22} />
                 </button>
-                <button onClick={capturePhoto} className="w-28 h-28 rounded-full border-8 border-white bg-white/20 hover:bg-white/50 transition-colors" />
-                <div className="w-[74px]" />
+                <button onClick={capturePhoto} className="w-16 h-16 rounded-full border-4 border-white bg-white/20 hover:bg-white/50 transition-colors" />
+                <div className="w-10" />
               </div>
             </motion.div>
           )}
 
           {/* STEP 3: PROCESSING SPINNER */}
           {step === 'processing' && (
-            <motion.div key="processing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full flex flex-col items-center justify-center gap-8">
-              <div className="w-56 h-56 border-[16px] border-hairline border-t-primary rounded-full animate-spin" />
-              <h2 className="text-4xl font-bold text-ink">{t('scan.reading')}</h2>
+            <motion.div key="processing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full flex flex-col items-center justify-center gap-4">
+              <div className="w-24 h-24 border-[8px] border-hairline border-t-primary rounded-full animate-spin" />
+              <h2 className="text-2xl font-bold text-ink">{t('scan.reading')}</h2>
             </motion.div>
           )}
 
           {/* STEP 4: MOCK OCR CONFIRMATION */}
           {step === 'confirm' && (
-            <motion.div key="confirm" initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="h-full flex gap-8 items-center justify-center">
-              <div className="w-[44%] h-[440px] rounded-[1.75rem] overflow-hidden shadow-[var(--card-lift)] bg-white p-3 border border-hairline">
-                <img src={currentImage!} className="w-full h-full object-contain rounded-[1.25rem]" />
+            <motion.div key="confirm" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="h-full flex gap-5 items-center justify-center">
+              <div className="w-[45%] h-[280px] sm:h-[320px] rounded-2xl overflow-hidden shadow-sm bg-white p-2 border border-hairline">
+                <img src={currentImage!} className="w-full h-full object-contain rounded-xl" />
               </div>
 
-              <div className="w-[44%] flex flex-col gap-7">
-                <div className="bg-surface p-9 rounded-[1.75rem] shadow-[var(--card-lift)] border border-hairline flex flex-col gap-5">
-                  <div className="flex items-center gap-3 text-primary">
-                    <FileText size={40} />
-                    <h2 className="text-3xl font-bold">{t('scan.found')}</h2>
+              <div className="w-[48%] flex flex-col gap-4">
+                <div className="bg-surface p-5 rounded-2xl shadow-xs border border-hairline flex flex-col gap-3">
+                  <div className="flex items-center gap-2 text-primary">
+                    <FileText size={24} />
+                    <h2 className="text-xl font-bold">{t('scan.found')}</h2>
                   </div>
 
-                  <div className="space-y-3 text-2xl">
-                    <div className="flex justify-between border-b border-hairline pb-3">
+                  <div className="space-y-2 text-sm sm:text-base">
+                    <div className="flex justify-between border-b border-hairline pb-2">
                       <span className="text-muted">{t('scan.doc.document')}</span>
                       <span className="font-bold text-ink">{t('scan.doc.bloodReport')}</span>
                     </div>
-                    <div className="flex justify-between border-b border-hairline pb-3">
+                    <div className="flex justify-between border-b border-hairline pb-2">
                       <span className="text-muted">{t('scan.doc.date')}</span>
                       <span className="font-bold text-ink">{t('scan.doc.dateValue')}</span>
                     </div>
@@ -288,14 +288,14 @@ export default function ScanScreen() {
                   </div>
                 </div>
 
-                <div className="flex gap-5">
-                  <LargeTouchButton onClick={rejectDocument} variant="secondary" className="flex-1 py-6">
-                    <RefreshCcw size={32} className="mr-3" />
-                    <span className="text-2xl">{t('scan.retake')}</span>
+                <div className="flex gap-3">
+                  <LargeTouchButton onClick={rejectDocument} variant="secondary" className="flex-1 py-2.5 min-h-[44px] text-base">
+                    <RefreshCcw size={18} className="mr-1.5" />
+                    <span>{t('scan.retake')}</span>
                   </LargeTouchButton>
-                  <LargeTouchButton onClick={confirmDocument} className="flex-1 py-6">
-                    <Check size={32} className="mr-3" />
-                    <span className="text-2xl">{t('scan.looksGood')}</span>
+                  <LargeTouchButton onClick={confirmDocument} className="flex-1 py-2.5 min-h-[44px] text-base">
+                    <Check size={18} className="mr-1.5" />
+                    <span>{t('scan.looksGood')}</span>
                   </LargeTouchButton>
                 </div>
               </div>
@@ -307,18 +307,18 @@ export default function ScanScreen() {
         <AnimatePresence>
           {step === 'select' && docs.length > 0 && (
             <motion.div
-              initial={{ opacity: 0, y: 100 }}
+              initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 100 }}
-              className="absolute bottom-0 left-0 right-0 h-40 bg-surface/90 backdrop-blur-md border border-hairline rounded-[1.5rem] px-8 py-5 flex items-center gap-5 shadow-[var(--card-lift)]"
+              exit={{ opacity: 0, y: 40 }}
+              className="absolute bottom-0 left-0 right-0 h-24 bg-surface/90 backdrop-blur-md border border-hairline rounded-2xl px-5 py-2.5 flex items-center gap-4 shadow-sm"
             >
-              <span className="text-xl font-bold text-ink w-28">{t('scan.scannedCount', { count: docs.length })}</span>
-              <div className="flex-1 flex gap-4 overflow-x-auto pb-1">
+              <span className="text-sm font-bold text-ink w-20">{t('scan.scannedCount', { count: docs.length })}</span>
+              <div className="flex-1 flex gap-3 overflow-x-auto pb-1">
                 {docs.map((doc) => (
-                  <div key={doc.id} className="w-28 h-28 flex-shrink-0 rounded-2xl overflow-hidden border-4 border-hairline shadow-sm relative">
+                  <div key={doc.id} className="w-16 h-16 flex-shrink-0 rounded-xl overflow-hidden border-2 border-hairline shadow-xs relative">
                     <img src={doc.dataUrl} className="w-full h-full object-cover" />
-                    <div className="absolute top-1.5 right-1.5 bg-primary rounded-full p-1 text-white">
-                      <Check size={14} />
+                    <div className="absolute top-1 right-1 bg-primary rounded-full p-0.5 text-white">
+                      <Check size={10} />
                     </div>
                   </div>
                 ))}

@@ -78,10 +78,10 @@ export default function InterviewScreen() {
   // ---- Voice narration path ----
   if (isVoiceNarration) {
     return (
-      <div className="h-full flex flex-col items-center justify-center gap-10">
+      <div className="h-full flex flex-col items-center justify-center gap-6">
         <div className="text-center">
-          <h1 className="text-5xl font-extrabold text-ink tracking-tight">{t('interview.voice.heading')}</h1>
-          <p className="text-2xl text-muted mt-2">{t('interview.voice.sub')}</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-ink tracking-tight">{t('interview.voice.heading')}</h1>
+          <p className="text-sm sm:text-base text-muted mt-1">{t('interview.voice.sub')}</p>
         </div>
 
         <motion.button
@@ -90,17 +90,17 @@ export default function InterviewScreen() {
           whileTap={{ scale: 0.95 }}
           onClick={() => startListening({ language, mode: 'transcribe' })}
           className={cn(
-            'w-80 h-80 rounded-full flex flex-col items-center justify-center gap-5 shadow-[var(--card-pop)] transition-all duration-300',
-            isListening ? 'bg-primary text-white animate-pulse border-8 border-primary/30' : 'bg-surface border-8 border-hairline text-primary',
+            'w-40 h-40 rounded-full flex flex-col items-center justify-center gap-2 shadow-md transition-all duration-300',
+            isListening ? 'bg-primary text-white animate-pulse border-4 border-primary/30' : 'bg-surface border-4 border-hairline text-primary',
           )}
         >
-          <Mic size={96} />
-          <span className="text-3xl font-bold">{isListening ? t('common.listening') : t('common.tapToSpeak')}</span>
+          <Mic size={48} />
+          <span className="text-lg font-bold">{isListening ? t('common.listening') : t('common.tapToSpeak')}</span>
         </motion.button>
 
-        <LargeTouchButton onClick={handleVoiceNarrationComplete} className="w-80 py-5">
-          <span className="text-2xl">{t('interview.voice.done')}</span>
-          <ArrowRight size={30} className="ml-2" />
+        <LargeTouchButton onClick={handleVoiceNarrationComplete} className="w-60 py-2.5 min-h-[44px] text-base">
+          <span>{t('interview.voice.done')}</span>
+          <ArrowRight size={20} className="ml-2" />
         </LargeTouchButton>
       </div>
     );
@@ -110,17 +110,17 @@ export default function InterviewScreen() {
   return (
     <div className="h-full flex flex-col">
       {/* per-question progress dots */}
-      <div className="flex items-center gap-2.5 pb-2">
+      <div className="flex items-center gap-2 pb-1 shrink-0">
         {questions.map((_, idx) => (
           <div
             key={idx}
             className={cn(
-              'h-2.5 rounded-full transition-all duration-300',
-              idx === currentIndex ? 'w-10 bg-primary' : idx < currentIndex ? 'w-2.5 bg-primary/50' : 'w-2.5 bg-hairline',
+              'h-2 rounded-full transition-all duration-300',
+              idx === currentIndex ? 'w-7 bg-primary' : idx < currentIndex ? 'w-2 bg-primary/50' : 'w-2 bg-hairline',
             )}
           />
         ))}
-        <span className="ml-2 text-lg font-semibold text-muted">
+        <span className="ml-1.5 text-xs sm:text-sm font-semibold text-muted">
           {t('interview.questionOf', { current: currentIndex + 1, total: questions.length })}
         </span>
       </div>
@@ -129,16 +129,16 @@ export default function InterviewScreen() {
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
-            initial={{ opacity: 0, x: 50 }}
+            initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            className="w-full flex flex-col items-center gap-6"
+            exit={{ opacity: 0, x: -30 }}
+            className="w-full flex flex-col items-center gap-4"
           >
-            <h1 className="text-[2.5rem] font-extrabold text-ink text-center leading-tight tracking-tight max-w-4xl">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-ink text-center leading-snug tracking-tight max-w-3xl">
               {t(currentQuestion.text)}
             </h1>
 
-            <div className={cn('grid gap-5 w-full', currentQuestion.options.length === 3 ? 'grid-cols-3' : 'grid-cols-2')}>
+            <div className={cn('grid gap-3 sm:gap-4 w-full max-w-3xl', currentQuestion.options.length === 3 ? 'grid-cols-3' : 'grid-cols-2')}>
               {currentQuestion.options.map((opt) => (
                 <IconTile
                   key={opt.id}
@@ -146,7 +146,7 @@ export default function InterviewScreen() {
                   label={t(opt.label)}
                   selected={selectedOption === opt.id}
                   onClick={() => !isConfirming && handleOptionSelect(opt.id, opt.confirmationText, opt.triggersRedFlag)}
-                  className={cn(currentQuestion.options.length >= 4 ? 'h-40' : 'h-52', isConfirming && selectedOption !== opt.id ? 'opacity-50 grayscale' : '')}
+                  className={cn(currentQuestion.options.length >= 4 ? 'h-28 sm:h-32' : 'h-32 sm:h-36', isConfirming && selectedOption !== opt.id ? 'opacity-50 grayscale' : '')}
                   disabled={isConfirming}
                 />
               ))}
@@ -157,20 +157,20 @@ export default function InterviewScreen() {
                 whileTap={{ scale: 0.97 }}
                 onClick={() => startListening({ language, mode: 'transcribe' })}
                 className={cn(
-                  'flex items-center gap-4 px-8 py-4 rounded-full bg-surface shadow-[var(--shadow-soft)] border-2 border-hairline',
-                  isListening ? 'ring-4 ring-primary/30 border-primary' : '',
+                  'flex items-center gap-3 px-5 py-2.5 rounded-full bg-surface shadow-xs border border-hairline',
+                  isListening ? 'ring-3 ring-primary/30 border-primary' : '',
                 )}
               >
-                <div className={cn('p-3 rounded-full text-primary', isListening ? 'bg-primary text-white animate-pulse' : 'bg-primary-soft')}>
-                  <Mic size={28} />
+                <div className={cn('p-2 rounded-full text-primary', isListening ? 'bg-primary text-white animate-pulse' : 'bg-primary-soft')}>
+                  <Mic size={20} />
                 </div>
-                <span className="text-xl font-semibold text-ink">{isListening ? t('common.listening') : t('interview.answerVoice')}</span>
+                <span className="text-sm sm:text-base font-semibold text-ink">{isListening ? t('common.listening') : t('interview.answerVoice')}</span>
               </motion.button>
             ) : (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="px-8 py-3.5 bg-primary-soft text-primary-deep rounded-full text-xl font-semibold animate-pulse"
+                className="px-6 py-2 bg-primary-soft text-primary-deep rounded-full text-sm font-semibold animate-pulse"
               >
                 {t('interview.saving')}
               </motion.div>
@@ -179,9 +179,9 @@ export default function InterviewScreen() {
         </AnimatePresence>
       </div>
 
-      <div className="pt-3">
-        <LargeTouchButton variant="secondary" onClick={() => router.push('/complaint')} className="w-44 py-4">
-          <ArrowLeft size={24} className="mr-2" /> {t('common.back')}
+      <div className="pt-2 shrink-0">
+        <LargeTouchButton variant="secondary" onClick={() => router.push('/complaint')} className="w-36 py-2 min-h-[40px] text-sm">
+          <ArrowLeft size={18} className="mr-1.5" /> {t('common.back')}
         </LargeTouchButton>
       </div>
     </div>

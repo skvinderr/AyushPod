@@ -26,15 +26,11 @@ import { useAvatar } from '../store/useAvatar';
 const BOX_W = 620;
 const BOX_H = 760;
 
-// transform targets, anchored bottom-left of the viewport.
-// She idles up in the top-left rail (her "home"); on stage she stands large in
-// the left of the content area. Only downscaled from the native box, so crisp.
-const CORNER = { x: 2, y: -210, scale: 0.6 };
-const STAGE = { x: 296, y: 4, scale: 0.9 };
-
-// speech-bubble targets (top-left, viewport px)
-const BUBBLE_CORNER = { x: 24, y: 500 };
-const BUBBLE_STAGE = { x: 610, y: 110 };
+// Transform targets, anchored bottom-left of the viewport.
+// CORNER: parked in the left guide rail (her consultation room).
+// STAGE: steps gracefully out of the rail, gesturing towards the content without blocking it.
+const CORNER = { x: -25, y: -210, scale: 0.58 };
+const STAGE = { x: 170, y: -70, scale: 0.70 };
 
 function isWebGLAvailable() {
   try {
@@ -45,7 +41,7 @@ function isWebGLAvailable() {
   }
 }
 
-const spring = { type: 'spring', stiffness: 150, damping: 22, mass: 1 } as const;
+const spring = { type: 'spring', stiffness: 160, damping: 24, mass: 1 } as const;
 
 export function AvatarStage() {
   const presence = useAvatar((s) => s.presence);
@@ -60,24 +56,23 @@ export function AvatarStage() {
 
   const onStage = presence === 'stage';
   const pos = onStage ? STAGE : CORNER;
-  const bubblePos = onStage ? BUBBLE_STAGE : BUBBLE_CORNER;
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-40 overflow-hidden">
-      {/* Spotlight vignette — dims the content and focuses on Aaya on stage */}
+    <div className="pointer-events-none fixed inset-0 z-30 overflow-hidden">
+      {/* Subtle warm ambient focus on stage — non-intrusive, keeps content clearly visible */}
       <motion.div
         aria-hidden
         className="absolute inset-0"
         initial={false}
-        animate={{ opacity: onStage ? 1 : 0 }}
-        transition={{ duration: 0.5 }}
+        animate={{ opacity: onStage ? 0.22 : 0 }}
+        transition={{ duration: 0.4 }}
         style={{
           background:
-            'radial-gradient(58% 80% at 30% 54%, rgba(255,255,255,0) 0%, rgba(41,30,18,0.10) 55%, rgba(41,30,18,0.30) 100%)',
+            'radial-gradient(ellipse 65% 75% at 28% 50%, rgba(42, 157, 143, 0.18) 0%, rgba(30, 20, 10, 0.22) 100%)',
         }}
       />
 
-      {/* Aaya — fixed-size box, scaled/translated between corner and stage */}
+      {/* Aaya — fixed-size box, scaled/translated between rail corner and guiding stage */}
       <motion.div
         className="absolute bottom-0 left-0"
         style={{ width: BOX_W, height: BOX_H, transformOrigin: 'bottom left' }}
@@ -85,35 +80,36 @@ export function AvatarStage() {
         animate={{ x: pos.x, y: pos.y, scale: pos.scale }}
         transition={spring}
       >
-        {/* soft floor glow under her feet, so she is grounded on any background */}
+        {/* Soft floor glow under her feet */}
         <div
           aria-hidden
-          className="absolute left-1/2 -translate-x-1/2 bottom-[54px] w-[74%] h-16 rounded-[50%] blur-md"
-          style={{ background: 'radial-gradient(closest-side, rgba(31,122,110,0.32), transparent)' }}
+          className="absolute left-1/2 -translate-x-1/2 bottom-[54px] w-[74%] h-14 rounded-[50%] blur-md"
+          style={{ background: 'radial-gradient(closest-side, rgba(31,122,110,0.28), transparent)' }}
         />
-        {ready && (useWebGL ? <AvatarController /> : <FallbackAvatar />)}
-      </motion.div>
 
-      {/* Speech bubble — rides along beside her head while she speaks */}
-      <AnimatePresence>
-        {caption && (
-          <motion.div
-            key="aaya-speech"
-            className="absolute"
-            style={{ width: 372, transformOrigin: 'left bottom' }}
-            initial={{ opacity: 0, scale: 0.9, x: bubblePos.x, y: bubblePos.y }}
-            animate={{ opacity: 1, scale: 1, x: bubblePos.x, y: bubblePos.y }}
-            exit={{ opacity: 0, scale: 0.92 }}
-            transition={spring}
-          >
-            <div className="relative rounded-[1.6rem] bg-white px-6 py-5 shadow-[0_24px_60px_-18px_rgba(70,55,40,0.5)] border border-hairline">
-              {/* tail pointing down-left toward her */}
-              <div className="absolute -bottom-2 left-9 w-5 h-5 rotate-45 bg-white border-b border-r border-hairline" />
-              <p className="text-[1.35rem] leading-snug font-semibold text-ink">{caption}</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        {ready && (useWebGL ? <AvatarController /> : <FallbackAvatar />)}
+
+        {/* Speech bubble — rides along beside her head smoothly */}
+        <AnimatePresence>
+          {caption && (
+            <motion.div
+              key="aaya-speech-bubble"
+              className="absolute pointer-events-none"
+              style={{ left: 345, top: 125, maxWidth: 300 }}
+              initial={{ opacity: 0, scale: 0.85, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 8 }}
+              transition={{ type: 'spring', stiffness: 220, damping: 20 }}
+            >
+              <div className="relative rounded-2xl bg-white/95 backdrop-blur-md px-4 py-3 shadow-[0_16px_36px_-12px_rgba(70,55,40,0.35)] border border-hairline">
+                {/* tail pointing down-left toward her mouth */}
+                <div className="absolute -bottom-1.5 left-6 w-3 h-3 rotate-45 bg-white border-b border-r border-hairline" />
+                <p className="text-xs sm:text-sm font-semibold text-ink leading-snug">{caption}</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 }

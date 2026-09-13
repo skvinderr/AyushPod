@@ -24,10 +24,10 @@ export const LargeTouchButton = React.forwardRef<HTMLButtonElement, LargeTouchBu
         whileTap={{ scale: disabled ? 1 : 0.95 }}
         disabled={disabled}
         className={cn(
-          "flex items-center justify-center font-semibold transition-all duration-300 outline-none focus-visible:ring-8",
-          "rounded-[1.5rem] px-12 py-6 text-2xl min-h-[96px]",
+          "flex items-center justify-center font-semibold transition-all duration-300 outline-none focus-visible:ring-4",
+          "rounded-2xl px-6 py-3.5 text-base sm:text-lg min-h-[50px]",
           variant === 'primary'
-            ? "bg-primary text-white hover:bg-primary-deep shadow-[0_14px_30px_-14px_rgba(31,122,110,0.7)] focus-visible:ring-primary/40"
+            ? "bg-primary text-white hover:bg-primary-deep shadow-[0_10px_24px_-12px_rgba(31,122,110,0.7)] focus-visible:ring-primary/40"
             : "bg-surface text-ink border-2 border-hairline hover:border-primary/40 hover:bg-surface-warm shadow-sm focus-visible:ring-primary/25",
           disabled ? "opacity-50 cursor-not-allowed" : "",
           fullWidth ? 'w-full' : '',
