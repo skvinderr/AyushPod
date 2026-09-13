@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useAvatar } from '../../store/useAvatar';
 import { useSessionStore } from '../../store/useSessionStore';
-import { BodyModelCanvas } from '../../components/BodyModel3D';
+import dynamic from 'next/dynamic';
+const BodyModelCanvas = dynamic(() => import('../../components/BodyModel3D').then(mod => mod.BodyModelCanvas), { ssr: false });
 import { useVoiceInput } from '../../lib/useVoiceInput';
 import { cn } from '../../components/LargeTouchButton';
 import { useT } from '../../i18n';
@@ -90,9 +91,10 @@ export default function ComplaintScreen() {
   const [rotateSignal, setRotateSignal] = useState(0);
 
   useEffect(() => {
+    router.prefetch('/interview');
     speak(t('complaint.spoken.prompt'), { language, gesture: 'point-right', stage: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [speak, language]);
+  }, [speak, language, router]);
 
   const handleZone = (id: string) => {
     setActiveZone(id);

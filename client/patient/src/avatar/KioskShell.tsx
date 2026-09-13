@@ -163,7 +163,7 @@ export function KioskShell({ children }: { children: React.ReactNode }) {
               <Stethoscope size={26} />
             </div>
             <div className="flex flex-col leading-none">
-              <span className="text-2xl font-extrabold text-white tracking-tight">MediKiosk</span>
+              <span className="text-2xl font-extrabold text-white tracking-tight">AyushPod</span>
               <span className="text-sm font-medium text-white/70 mt-1">Aapki apni saheli</span>
             </div>
           </div>

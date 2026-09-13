@@ -10,68 +10,88 @@ interface ToggleSwitchProps {
   onChange: (checked: boolean) => void;
   icon: LucideIcon;
   label: string;
+  description?: string;
   onExplain: () => void;
   className?: string;
 }
 
-export function ToggleSwitch({ checked, onChange, icon: Icon, label, onExplain, className }: ToggleSwitchProps) {
+export function ToggleSwitch({ checked, onChange, icon: Icon, label, description, onExplain, className }: ToggleSwitchProps) {
   return (
     <div className={cn(
-      "flex items-center gap-6 p-6 rounded-[2rem] border-2 transition-all duration-300",
-      checked ? "border-primary bg-surface shadow-[var(--shadow-warm)] ring-4 ring-primary/20" : "border-hairline bg-surface shadow-[var(--shadow-soft)]",
+      "flex items-center gap-5 p-5 rounded-[1.75rem] border-2 transition-all duration-300",
+      checked
+        ? "border-primary bg-primary-soft/30 shadow-[var(--shadow-warm)] ring-2 ring-primary/25"
+        : "border-hairline bg-surface shadow-[var(--shadow-soft)] hover:border-hairline hover:shadow-[var(--shadow-warm)]",
       className
     )}>
-      
-      {/* Icon & Label */}
-      <div className="flex items-center gap-6 flex-1 cursor-pointer" onClick={() => onChange(!checked)}>
+
+      {/* Clickable icon + label area */}
+      <div
+        className="flex items-center gap-5 flex-1 cursor-pointer min-w-0"
+        onClick={() => onChange(!checked)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onChange(!checked); } }}
+      >
         <div className={cn(
-          "p-4 rounded-full transition-colors",
-          checked ? "bg-primary text-white" : "bg-primary-soft text-primary"
+          "p-3.5 rounded-2xl transition-all duration-300 shrink-0",
+          checked ? "bg-primary text-white shadow-md shadow-primary/20" : "bg-surface-warm text-muted"
         )}>
-          <Icon size={40} />
+          <Icon size={32} />
         </div>
-        <span className="text-3xl font-semibold text-ink select-none">{label}</span>
+        <div className="flex flex-col min-w-0">
+          <span className={cn(
+            "text-xl font-bold select-none transition-colors leading-tight",
+            checked ? "text-ink" : "text-ink"
+          )}>{label}</span>
+          {description && (
+            <span className="text-sm text-muted mt-0.5 leading-snug">{description}</span>
+          )}
+        </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex items-center gap-8">
-        
-        {/* Audio Explain Button */}
+      {/* Action buttons */}
+      <div className="flex items-center gap-4 shrink-0">
+
+        {/* Audio explain button */}
         <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
           onClick={(e) => {
             e.stopPropagation();
             onExplain();
           }}
-          className="p-4 rounded-full bg-primary-soft text-primary hover:bg-primary/15 flex items-center justify-center outline-none focus:ring-4 focus:ring-primary/40 shadow-sm"
+          className={cn(
+            "p-3 rounded-xl flex items-center justify-center outline-none",
+            "focus:ring-4 focus:ring-primary/40 transition-all",
+            "bg-surface-warm text-muted hover:bg-primary-soft hover:text-primary"
+          )}
           aria-label="Explain this"
         >
-          <Volume2 size={32} />
+          <Volume2 size={24} />
         </motion.button>
 
-        {/* The big Toggle itself */}
+        {/* Toggle switch */}
         <motion.button
           onClick={() => onChange(!checked)}
           className={cn(
-            "relative w-32 h-16 rounded-full transition-colors duration-300 flex items-center px-2 outline-none focus:ring-8 focus:ring-primary/40 shadow-inner",
-            checked ? "bg-primary" : "bg-hairline"
+            "relative w-[72px] h-10 rounded-full transition-colors duration-300 flex items-center px-1.5",
+            "outline-none focus:ring-4 focus:ring-primary/40",
+            checked ? "bg-primary shadow-inner shadow-primary-deep/30" : "bg-hairline"
           )}
+          aria-checked={checked}
+          role="switch"
         >
           <motion.div
             layout
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
-            className={cn(
-              "w-12 h-12 rounded-full shadow-md",
-              checked ? "bg-white" : "bg-white"
-            )}
+            className="w-7 h-7 rounded-full bg-white shadow-md"
             style={{
               marginLeft: checked ? "auto" : "0",
             }}
           />
         </motion.button>
       </div>
-
     </div>
   );
 }

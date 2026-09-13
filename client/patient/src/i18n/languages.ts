@@ -20,7 +20,7 @@ export interface LanguageMeta {
 
 export const LANGUAGES: LanguageMeta[] = [
   { id: 'hi', native: 'हिंदी', english: 'Hindi', glyph: 'अ', greeting: 'नमस्ते, आपका स्वागत है!', bcp47: 'hi-IN' },
-  { id: 'en', native: 'English', english: 'English', glyph: 'A', greeting: 'Welcome to MediKiosk!', bcp47: 'en-IN' },
+  { id: 'en', native: 'English', english: 'English', glyph: 'A', greeting: 'Welcome to AyushPod!', bcp47: 'en-IN' },
   { id: 'bn', native: 'বাংলা', english: 'Bengali', glyph: 'অ', greeting: 'নমস্কার, আপনাকে স্বাগত!', bcp47: 'bn-IN' },
   { id: 'ta', native: 'தமிழ்', english: 'Tamil', glyph: 'அ', greeting: 'வணக்கம், நல்வரவு!', bcp47: 'ta-IN' },
   { id: 'mr', native: 'मराठी', english: 'Marathi', glyph: 'म', greeting: 'नमस्कार, आपले स्वागत आहे!', bcp47: 'mr-IN' },

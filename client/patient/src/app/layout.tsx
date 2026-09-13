@@ -1,4 +1,5 @@
 import { KioskShell } from '../avatar/KioskShell';
+import { SplashScreen } from '../components/SplashScreen';
 import type { Metadata } from 'next';
 import { Poppins, Noto_Sans_Devanagari } from 'next/font/google';
 import './globals.css';
@@ -21,8 +22,8 @@ const notoDevanagari = Noto_Sans_Devanagari({
 });
 
 export const metadata: Metadata = {
-  title: 'MediKiosk Patient App',
-  description: 'Patient Kiosk application for MediKiosk',
+  title: 'AyushPod Patient App',
+  description: 'Patient Kiosk application for AyushPod',
 };
 
 export default function RootLayout({
@@ -36,6 +37,7 @@ export default function RootLayout({
       className={`${poppins.variable} ${notoDevanagari.variable}`}
     >
       <body className="antialiased min-h-screen bg-bg text-ink select-none overflow-hidden touch-none">
+        <SplashScreen />
         {/* Persistent split frame: Aaya's guide rail + the working area */}
         <KioskShell>{children}</KioskShell>
       </body>

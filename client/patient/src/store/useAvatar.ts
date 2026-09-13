@@ -116,11 +116,10 @@ export const useAvatar = create<AvatarStore>((set) => ({
       set({ state: 'idle', caption: '', gesture: 'none', presence: 'corner' });
     };
 
-    // Reading-time fallback so she always retreats, TTS or not (~150 wpm).
-    // If Sarvam audio arrives and plays, its real `onended` drives `finish()`
-    // instead (more accurate); the timer still covers the silent/offline case.
+    // Reading-time fallback + 5s network grace period so we don't prematurely
+    // race and cancel a valid but slow TTS API response for short sentences.
     const words = text.trim().split(/\s+/).filter(Boolean).length;
-    const estMs = Math.min(12_000, Math.max(2_600, words * 380));
+    const estMs = Math.min(15_000, Math.max(2_600, words * 380) + 5000);
     fallbackTimer = setTimeout(finish, estMs);
 
     // Sarvam Bulbul v3 via our server proxy. The key stays server-side; the
@@ -150,6 +149,7 @@ export const useAvatar = create<AvatarStore>((set) => ({
           audio.play().catch(() => {
             // Autoplay blocked or decode failed — fall back to a fresh timer.
             if (myToken === speakToken && !ended) {
+              if (fallbackTimer) clearTimeout(fallbackTimer);
               fallbackTimer = setTimeout(finish, estMs);
             }
           });

@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AvatarController } from './AvatarController';
+import dynamic from 'next/dynamic';
+const AvatarController = dynamic(() => import('./AvatarController').then((mod) => mod.AvatarController), { ssr: false });
 import { FallbackAvatar } from './FallbackAvatar';
 import { useAvatar } from '../store/useAvatar';
 

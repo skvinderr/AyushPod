@@ -6,7 +6,7 @@
   "common.listening": "Listening…",
   "common.tapToSpeak": "Tap to speak",
 
-  "shell.brand": "MediKiosk",
+  "shell.brand": "AyushPod",
   "shell.tagline": "Aapki apni saheli",
   "shell.aayaName": "Hello, I'm Aaya",
   "shell.state.listening": "I'm listening…",
@@ -24,7 +24,7 @@
   "shell.step.documents": "Documents",
   "shell.step.review": "Review",
 
-  "welcome.kicker": "MediKiosk · Government Health Kiosk",
+  "welcome.kicker": "AyushPod · Government Health Kiosk",
   "welcome.chooseLanguage": "Choose your language",
   "welcome.chooseLanguageSub": "अपनी भाषा चुनें — tap the language you speak",
   "welcome.sayLanguage": "Or say your language out loud",
