@@ -2,11 +2,11 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const { text, language_code } = await request.json();
+    const { input, source_language_code, target_language_code } = await request.json();
 
-    if (!text || !language_code) {
+    if (!input || !target_language_code) {
       return NextResponse.json(
-        { error: 'Missing text or language_code parameter' },
+        { error: 'Missing input or target_language_code parameter' },
         { status: 400 }
       );
     }
@@ -21,25 +21,26 @@ export async function POST(request: Request) {
       );
     }
 
-    const response = await fetch('https://api.sarvam.ai/text-to-speech', {
+    const response = await fetch('https://api.sarvam.ai/translate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'api-subscription-key': sarvamApiKey,
       },
       body: JSON.stringify({
-        text: text,
-        language_code: language_code,
-        speaker: 'shreya',
-        model: 'bulbul:v3',
-        pace: 1.0,
-        target_sample_rate: 24000
+        input: input,
+        source_language_code: source_language_code || 'en-IN',
+        target_language_code: target_language_code,
+        speaker_gender: 'Female',
+        mode: 'formal',
+        model: 'mayura:v1',
+        enable_preprocessing: false
       }),
     });
 
     if (!response.ok) {
       const errorData = await response.text();
-      console.error('Sarvam TTS API Error:', response.status, errorData);
+      console.error('Sarvam Translate API Error:', response.status, errorData);
       return NextResponse.json(
         { error: `Sarvam API returned error: ${response.status}` },
         { status: response.status }
@@ -49,7 +50,7 @@ export async function POST(request: Request) {
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error: any) {
-    console.error('API Error in /api/tts:', error);
+    console.error('API Error in /api/translate:', error);
     return NextResponse.json(
       { error: 'Internal server error', details: error.message },
       { status: 500 }
