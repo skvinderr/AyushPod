@@ -43,17 +43,11 @@ export default function WelcomeScreen() {
   const router = useRouter();
   const { speak } = useAvatar();
   const { language, setLanguage } = useSessionStore();
-  const { isListening, startListening } = useVoiceInput();
+  const { isListening, startListening, stopListening } = useVoiceInput();
   const { t } = useTranslation();
   
   const [hasSelected, setHasSelected] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout>(null);
-
-  const [hasSelected, setHasSelected] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  // Ref to avoid including `speak` in useEffect deps (it's a new function each render)
-  const speakRef = useRef(speak);
-  speakRef.current = speak;
 
   // Clean mount speech with a natural slight delay
   useEffect(() => {

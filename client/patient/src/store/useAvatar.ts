@@ -37,43 +37,7 @@ interface AvatarStore {
   speak: (text: string, opts?: SpeakOpts | string) => void;
 }
 
-let mouthTimer: ReturnType<typeof setInterval> | null = null;
-let fallbackTimer: ReturnType<typeof setTimeout> | null = null;
-// The audio element for the line currently playing. Each new line stops the
-// previous one so lines never overlap. Monotonic token guards against a slow
-// TTS response arriving after a newer line has already started.
-let currentAudio: HTMLAudioElement | null = null;
-let speakToken = 0;
 
-function stopCurrentAudio() {
-  if (currentAudio) {
-    currentAudio.onended = null;
-    currentAudio.onerror = null;
-    try {
-      currentAudio.pause();
-    } catch {
-      /* ignore */
-    }
-    currentAudio = null;
-  }
-}
-
-function startMouth(set: (partial: Partial<AvatarStore>) => void) {
-  stopMouth(set);
-  // Pseudo-viseme: jitter the mouth openness on a fast interval. Cheap, and
-  // reads as speech without needing real audio-amplitude analysis.
-  mouthTimer = setInterval(() => {
-    set({ mouth: 0.25 + Math.random() * 0.75 });
-  }, 90);
-}
-
-function stopMouth(set: (partial: Partial<AvatarStore>) => void) {
-  if (mouthTimer) {
-    clearInterval(mouthTimer);
-    mouthTimer = null;
-  }
-  set({ mouth: 0 });
-}
 
 let currentAudio: HTMLAudioElement | null = null;
 let currentRequestId = 0; // Used to cancel stale requests and fix double-voice
@@ -105,8 +69,13 @@ export const useAvatar = create<AvatarStore>((set) => ({
   gesture: 'none',
   caption: '',
   setState: (state) => set({ state }),
-  speak: async (text, language = 'en') => {
+  setMouth: (mouth) => set({ mouth }),
+  enterStage: (gesture = 'present') => set({ presence: 'stage', gesture }),
+  exitStage: () => set({ presence: 'corner', gesture: 'none', caption: '' }),
+  speak: async (text, optsOrLang = 'en') => {
     if (typeof window === 'undefined') return;
+
+    const language = typeof optsOrLang === 'string' ? optsOrLang : (optsOrLang?.language || 'en');
 
     // Increment request ID — any older in-flight request will see a mismatch and abort
     const myRequestId = ++currentRequestId;

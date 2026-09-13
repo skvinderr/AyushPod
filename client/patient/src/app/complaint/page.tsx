@@ -46,11 +46,7 @@ export default function ComplaintScreen() {
   const router = useRouter();
   const { speak } = useAvatar();
   const { language, setChiefComplaint, updateHistoryAnswer } = useSessionStore();
-  const { isListening, startListening } = useVoiceInput();
-  const { t } = useT();
 
-  const [activeZone, setActiveZone] = useState<string | null>(null);
-  const [rotateSignal, setRotateSignal] = useState(0);
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>('stomach');
   const [painLevel, setPainLevel] = useState<'low' | 'medium' | 'high'>('medium');
@@ -79,7 +75,7 @@ export default function ComplaintScreen() {
     router.push('/interview');
   };
 
-  const activeCfg = activeZone ? ZONE_CONFIG[activeZone] : null;
+
 
   return (
     <div className="fixed inset-0 bg-[#eef7f6] flex flex-col justify-between p-3 sm:p-5 select-none font-sans overflow-hidden h-[100svh] w-[100vw]">
