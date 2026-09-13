@@ -105,93 +105,6 @@ export const useAvatar = create<AvatarStore>((set) => ({
   gesture: 'none',
   caption: '',
   setState: (state) => set({ state }),
-<<<<<<< HEAD
-  setMouth: (mouth) => set({ mouth }),
-  enterStage: (gesture = 'present') => set({ presence: 'stage', gesture }),
-  exitStage: () => set({ presence: 'corner', gesture: 'none', caption: '' }),
-  speak: (text, opts) => {
-    // Back-compat: speak(text, 'hi') still works; new call is speak(text, { ... }).
-    const o: SpeakOpts = typeof opts === 'string' ? { language: opts } : opts || {};
-    const language = o.language ?? 'en';
-    const wantsStage = !!o.stage;
-    const gesture = o.gesture ?? (wantsStage ? 'present' : 'none');
-
-    // Clear any in-flight line so a new one takes over cleanly.
-    if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
-    stopCurrentAudio();
-    const myToken = ++speakToken;
-
-    // Enter IMMEDIATELY (synchronously) so guidance is always visible — even on
-    // kiosks whose SpeechSynthesis has no installed voices and never fires
-    // onstart/onend. TTS, when it works, just adds the voice on top.
-    set({ state: 'talking', caption: text });
-    if (wantsStage) set({ presence: 'stage', gesture });
-    startMouth(set);
-
-    let ended = false;
-    const finish = () => {
-      if (ended) return;
-      ended = true;
-      if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
-      stopCurrentAudio();
-      stopMouth(set);
-      // Retreat to the corner after guiding; caption is only shown while
-      // actively speaking, so always clear it here.
-      set({ state: 'idle', caption: '', gesture: 'none', presence: 'corner' });
-    };
-
-    // Reading-time fallback + 5s network grace period so we don't prematurely
-    // race and cancel a valid but slow TTS API response for short sentences.
-    const words = text.trim().split(/\s+/).filter(Boolean).length;
-    const estMs = Math.min(15_000, Math.max(2_600, words * 380) + 5000);
-    fallbackTimer = setTimeout(finish, estMs);
-
-    // Sarvam Bulbul v3 via our server proxy. The key stays server-side; the
-    // browser only ever talks to /api/tts. Any failure leaves the fallback
-    // timer in charge, so Aaya still guides silently and never hangs.
-    if (typeof window !== 'undefined') {
-      fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, language }),
-      })
-        .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
-        .then((data: { audio?: string }) => {
-          // A newer line started while we were waiting — drop this audio.
-          if (myToken !== speakToken || ended || !data.audio) return;
-          const audio = new Audio(`data:audio/wav;base64,${data.audio}`);
-          currentAudio = audio;
-          // Real audio is playing: extend past the reading estimate and let
-          // playback end drive the retreat.
-          if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
-          audio.onended = () => {
-            if (myToken === speakToken) finish();
-          };
-          audio.onerror = () => {
-            if (myToken === speakToken) finish();
-          };
-          audio.play().catch(() => {
-            // Autoplay blocked or decode failed — fall back to a fresh timer.
-            if (myToken === speakToken && !ended) {
-              if (fallbackTimer) clearTimeout(fallbackTimer);
-              fallbackTimer = setTimeout(finish, estMs);
-            }
-          });
-        })
-        .catch(() => {
-          /* network/500: fallback timer already scheduled */
-        });
-    }
-  },
-}));
-
-// Dev-only affordance: expose the store so the avatar can be driven/pinned from
-// the browser console (e.g. useAvatar.setState({ presence: 'stage' })) while
-// tuning her look. Stripped from production builds.
-if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
-  (window as unknown as { useAvatar?: typeof useAvatar }).useAvatar = useAvatar;
-}
-=======
   speak: async (text, language = 'en') => {
     if (typeof window === 'undefined') return;
 
@@ -271,4 +184,3 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
     }
   },
 }));
->>>>>>> 96461fe3b8abefe86ba2737f1489dee49613bcfa

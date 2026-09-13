@@ -1,10 +1,5 @@
 "use client";
 
-<<<<<<< HEAD
-import React from 'react';
-import { Canvas } from '@react-three/fiber';
-import { Avatar3D } from './Avatar3D';
-=======
 import React, { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useAvatar } from '../store/useAvatar';
@@ -179,7 +174,6 @@ function MedicalDoctorAvatar() {
     </group>
   );
 }
->>>>>>> 96461fe3b8abefe86ba2737f1489dee49613bcfa
 
 /*
  * The single WebGL canvas that renders Aaya. It lives inside the <AvatarStage>
@@ -189,17 +183,6 @@ function MedicalDoctorAvatar() {
  */
 export function AvatarController() {
   return (
-<<<<<<< HEAD
-    <Canvas
-      shadows
-      dpr={[1, 2]}
-      camera={{ position: [0, 0.45, 5.2], fov: 40 }}
-      gl={{ alpha: true, antialias: true }}
-      style={{ width: '100%', height: '100%' }}
-    >
-      <Avatar3D />
-    </Canvas>
-=======
     <div className="w-full h-full relative">
       <Canvas camera={{ position: [0, 0, 3.2], fov: 45 }}>
         <ambientLight intensity={0.7} />
@@ -208,6 +191,5 @@ export function AvatarController() {
         <MedicalDoctorAvatar />
       </Canvas>
     </div>
->>>>>>> 96461fe3b8abefe86ba2737f1489dee49613bcfa
   );
 }
