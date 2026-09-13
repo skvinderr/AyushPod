@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 import { KioskShell } from '../avatar/KioskShell';
 import { SplashScreen } from '../components/SplashScreen';
+=======
+import { AvatarWrapper } from '../avatar/AvatarWrapper';
+import { TranslationProvider } from '../lib/i18n/TranslationContext';
+>>>>>>> 96461fe3b8abefe86ba2737f1489dee49613bcfa
 import type { Metadata } from 'next';
 import { Poppins, Noto_Sans_Devanagari } from 'next/font/google';
 import './globals.css';
@@ -32,6 +37,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
+<<<<<<< HEAD
     <html
       lang="en"
       className={`${poppins.variable} ${notoDevanagari.variable}`}
@@ -40,6 +46,19 @@ export default function RootLayout({
         <SplashScreen />
         {/* Persistent split frame: Aaya's guide rail + the working area */}
         <KioskShell>{children}</KioskShell>
+=======
+    <html lang="en">
+      <body className="antialiased min-h-screen bg-slate-50 text-slate-900 select-none overflow-hidden touch-none">
+        <TranslationProvider>
+          {/* Global Avatar overlay */}
+          <AvatarWrapper />
+          
+          {/* Main Content Area */}
+          <main className="w-full h-screen p-8 max-w-7xl mx-auto">
+            {children}
+          </main>
+        </TranslationProvider>
+>>>>>>> 96461fe3b8abefe86ba2737f1489dee49613bcfa
       </body>
     </html>
   );
