@@ -16,6 +16,7 @@ export function Avatar3D() {
       if ((child as THREE.Mesh).isMesh) {
         child.castShadow = true;
         child.receiveShadow = true;
+        child.frustumCulled = false;
       }
     });
 
